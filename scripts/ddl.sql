@@ -1,8 +1,0 @@
-CREATE TABLE Integrante (
-	Matricula VARCHAR(9) PRIMARY KEY,
-	Nome VARCHAR(100) NOT NULL,
-	DataNasc DATE NOT NULL,
-	DataEntrada DATE NOT NULL,
-	Email VARCHAR(100) NOT NULL,
-	Telefone VARCHAR(15) NOT NULL
-);
