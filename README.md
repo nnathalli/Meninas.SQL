@@ -60,16 +60,19 @@ Conexão bem-sucedida com o banco!
 # Funcionalidades CRUD Implementadas
 
 -Tabelas escolhidas para o CRUD:
->Integrante
->FrentesDeTrabalho
->Atividades
+>1 - Integrante;
+>2 - FrentesDeTrabalho;
+>3 - Atividades.
 
 Comandos para os testes do CRUD:
+```
 python -m tests.teste_integrante_crud
 python -m tests.teste_frente_crud
 python -m tests.teste_atividade_crud
+```
 
 Comandos para verificação dos dados inseridos/atualizados no pgAdmin:
+
 SELECT * FROM integrante;
 SELECT * FROM frentesdetrabalho;
 SELECT * FROM atividades;
