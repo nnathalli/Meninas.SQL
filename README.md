@@ -79,10 +79,11 @@ SELECT * FROM atividades;
 
 Foram criadas duas views no banco de dados, usadas para facilitar consultas com dados agregados e organizados.
 
-* 1🔹 view_dashboard_gerencial
-Apresenta um panorama geral das frentes de trabalho:
-Contém:
-> Nome da frente e tipo (ensino, extensão etc.),  
+* 1🔹 view_dashboard_gerencial. 
+_Apresenta um panorama geral das frentes de trabalho:_
+
+> Contém:  
+Nome da frente e tipo (ensino, extensão etc.),  
 Total de integrantes e seus nomes,  
 Total de atividades e nomes das atividades,  
 Total de livros e artigos vinculados,  
@@ -94,10 +95,10 @@ Localização: scripts/views.sql/view_dashboard_gerencial.sql
 Consulta:
 SELECT * FROM view_dashboard_gerencial;
 
-* 2🔹 view_maratonas
-Mostra um resumo completo das maratonas de programação.
+* 2🔹 view_maratonas  
+_Mostra um resumo completo das maratonas de programação._
 
-> Contém:
+> Contém:  
 Nome,  
 Edição e premiação da maratona,  
 Total de equipes e participantes,  
