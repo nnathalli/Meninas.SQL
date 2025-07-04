@@ -55,14 +55,12 @@ Se tudo estiver funcionando corretamente, o terminal deve exibir:
 Conexão bem-sucedida com o banco!
 ```
 
-...
-
 # Funcionalidades CRUD Implementadas
 
 -Tabelas escolhidas para o CRUD:
->1 - Integrante;
->2 - FrentesDeTrabalho;
->3 - Atividades.
+>1 - Integrante;  
+>2 - FrentesDeTrabalho;  
+>3 - Atividades.  
 
 Comandos para os testes do CRUD:
 ```
@@ -73,7 +71,40 @@ python -m tests.teste_atividade_crud
 
 Comandos para verificação dos dados inseridos/atualizados no pgAdmin:
 
-SELECT * FROM integrante;
-SELECT * FROM frentesdetrabalho;
-SELECT * FROM atividades;
+SELECT * FROM integrante;  
+SELECT * FROM frentesdetrabalho;  
+SELECT * FROM atividades;  
+
+# Views implementadas
+
+Foram criadas duas views no banco de dados, usadas para facilitar consultas com dados agregados e organizados.
+
+* 1🔹 view_dashboard_gerencial
+Apresenta um panorama geral das frentes de trabalho:
+Contém:
+> Nome da frente e tipo (ensino, extensão etc.),  
+Total de integrantes e seus nomes,  
+Total de atividades e nomes das atividades,  
+Total de livros e artigos vinculados,  
+Data da última atividade,  
+Escola parceira associada (se houver).  
+
+Localização: scripts/views.sql/view_dashboard_gerencial.sql
+
+Consulta:
+SELECT * FROM view_dashboard_gerencial;
+
+* 2🔹 view_maratonas
+Mostra um resumo completo das maratonas de programação.
+
+> Contém:
+Nome,  
+Edição e premiação da maratona,  
+Total de equipes e participantes,  
+Nomes das equipes e participantes,  
+Classificações,  
+Perguntas aplicadas, com enunciado e edição (em JSON). 
+
+Localização: scripts/views.sql/view_maratona.sql
+Consulta: SELECT * FROM view_maratona;
 
