@@ -79,7 +79,7 @@ SELECT * FROM atividades;
 
 Foram criadas duas views no banco de dados, usadas para facilitar consultas com dados agregados e organizados.
 
-* 1🔹 view_dashboard_gerencial. 
+* 1🔹 view_dashboard_gerencial.  
 _Apresenta um panorama geral das frentes de trabalho:_
 
 > Contém:  
