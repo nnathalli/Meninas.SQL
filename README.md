@@ -92,8 +92,7 @@ Escola parceira associada (se houver).
 
 Localização: scripts/views.sql/view_dashboard_gerencial.sql
 
-Consulta:
-SELECT * FROM view_dashboard_gerencial;
+Consulta: SELECT * FROM view_dashboard_gerencial;
 
 * 2🔹 view_maratonas  
 _Mostra um resumo completo das maratonas de programação._
@@ -107,5 +106,6 @@ Classificações,
 Perguntas aplicadas, com enunciado e edição (em JSON). 
 
 Localização: scripts/views.sql/view_maratona.sql
+
 Consulta: SELECT * FROM view_maratona;
 
