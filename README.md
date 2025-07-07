@@ -153,22 +153,22 @@ SELECT * FROM integranteatividade;
 
 ---
 
-## Inserção de dados binários
-
+### Inserção de dados binários
 As funções de upload e download desses arquivos foram integradas nos CRUDs e testadas por meio de scripts em `tests/`, garantindo que os dados binários sejam corretamente armazenados e recuperados.  
 
 * Inserção de Arquivos
 
->Foto (imagem) em Integrante: permite armazenar imagens das participantes de forma segura no banco, utilizando o tipo `BYTEA`.
+>Foto (imagem) em Integrante: permite armazenar imagens das participantes de forma segura no banco, utilizando o tipo 'BYTEA'.
 
->Arquivo PDF em Livros e Artigos: possibilita o armazenamento e posterior download de arquivos PDF vinculados aos registros de livros e artigos publicados no projeto, também utilizando o tipo `BYTEA`.
+>Arquivo PDF em Livros e Artigos: possibilita o armazenamento e posterior download de arquivos PDF vinculados aos registros de livros e artigos publicados no projeto, também utilizando o tipo 'BYTEA'.
 
 Como testar:
+
 ```bash
 python -m tests.teste_dadobinario       # Teste de fotos
 python -m tests.teste_artigo_crud      # Teste de artigos com PDF
 python -m tests.teste_livro_crud       # Teste de livros com PDF 
-````
+```
 
 Consulta de verificação no pgAdmin:
 
@@ -176,5 +176,5 @@ Consulta de verificação no pgAdmin:
 SELECT matricula, nome, LENGTH(foto) as tamanho_foto FROM integrante WHERE foto IS NOT NULL;
 SELECT codigo, nome, LENGTH(arquivo_pdf) as tamanho_pdf FROM artigopublicado;
 SELECT codigo, nome, LENGTH(arquivo_pdf) as tamanho_pdf FROM livros;
-````
+```
 ---
