@@ -77,9 +77,10 @@ SELECT * FROM atividades;
 
 # Views implementadas
 
-Foram criadas duas views no banco de dados, usadas para facilitar consultas com dados agregados e organizados.
+Foram criadas duas views no banco de dados, usadas para facilitar consultas com dados agregados e organizados.  
+scripts/views.sql  
 
-* 1🔹 view_dashboard_gerencial.  
+###  view_dashboard_gerencial.  
 _Apresenta um panorama geral das frentes de trabalho:_
 
 > Contém:  
@@ -90,11 +91,11 @@ Total de livros e artigos vinculados,
 Data da última atividade,  
 Escola parceira associada (se houver).  
 
-Localização: scripts/views.sql/view_dashboard_gerencial.sql
+* Localização: scripts/views.sql/view_dashboard_gerencial.sql
 
-Consulta: SELECT * FROM view_dashboard_gerencial;
+* Consulta: SELECT * FROM view_dashboard_gerencial;
 
-* 2🔹 view_maratonas  
+### view_maratonas  
 _Mostra um resumo completo das maratonas de programação._
 
 > Contém:  
@@ -105,9 +106,9 @@ Nomes das equipes e participantes,
 Classificações,  
 Perguntas aplicadas, com enunciado e edição (em JSON). 
 
-Localização: scripts/views.sql/view_maratona.sql
+* Localização: scripts/views.sql/view_maratona.sql
 
-Consulta: SELECT * FROM view_maratona;
+* Consulta: SELECT * FROM view_maratona;
 
 ---
 
@@ -123,11 +124,11 @@ A procedure implementa a lógica completa de cadastro de um novo integrante, com
 - Vincula à frente de trabalho (se fornecido);  
 - Associa automaticamente às atividades recentes da frente (últimos 30 dias).  
 
-### 📁 Teste SQL da Procedure
+###  Teste SQL da Procedure
 O arquivo de teste está em:  
 scripts/procedure/teste_call_procedure.sql  
 
-### ✅ Como executar no pgAdmin
+###  Como executar no pgAdmin
 Abra o Query Tool e rode:  
 
 ```sql
