@@ -177,3 +177,4 @@ SELECT matricula, nome, LENGTH(foto) as tamanho_foto FROM integrante WHERE foto 
 SELECT codigo, nome, LENGTH(arquivo_pdf) as tamanho_pdf FROM artigopublicado;
 SELECT codigo, nome, LENGTH(arquivo_pdf) as tamanho_pdf FROM livros;
 ````
+---
