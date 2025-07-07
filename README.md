@@ -1,28 +1,28 @@
 # Meninas.SQL – Projeto Final de Banco de Dados
 
 Este repositório contém o sistema desenvolvido para o projeto Meninas.SQL, que visa organizar os dados do projeto Meninas.comp da UnB, utilizando banco de dados PostgreSQL, interface gráfica e persistência com Python.
-
-# Sobre o Projeto Meninas.comp
+---
+## Sobre o Projeto Meninas.comp
 
 O projeto Meninas.comp incentiva a participação de meninas nas áreas de computação e tecnologia. Este sistema tem como objetivo armazenar, consultar e manter dados das alunas, professoras, atividades, produtos e parcerias.
-
-# Integrantes
+---
+## Integrantes
 
 * Maria Eduarda Pacheco Ferreira de Freitas – 221003977
 * Sara Lima Gaspar – 221017121
 * Pedro Maia de Oliveira Evangelista – 232005951
 * Náthalli de Oliveira Maciel – 221018970
-
-# Licença
+---
+## Licença
 
 Este projeto é acadêmico, sem fins lucrativos, e tem fins exclusivamente educacionais.
-
-# Requisitos
+---
+## Requisitos
 
 - Python 3.10+
 - PostgreSQL 15+
 - Biblioteca: 'psycopg2-binary'
-
+---
 ### Instalação das dependências:
 ```bash
 pip install psycopg2-binary
@@ -54,19 +54,23 @@ Se tudo estiver funcionando corretamente, o terminal deve exibir:
 ```
 Conexão bem-sucedida com o banco!
 ```
-
-# Funcionalidades CRUD Implementadas
+---
+## Funcionalidades CRUD Implementadas
 
 -Tabelas escolhidas para o CRUD:
 >1 - Integrante;  
 >2 - FrentesDeTrabalho;  
->3 - Atividades.  
+>3 - Atividades;  
+>4 - Livros ();  
+>5 - Artigos ().  
 
 Comandos para os testes do CRUD:
 ```
 python -m tests.teste_integrante_crud
 python -m tests.teste_frente_crud
 python -m tests.teste_atividade_crud
+python -m tests.teste_artigo_crud
+python -m tests.teste_livro_crud
 ```
 
 Comandos para verificação dos dados inseridos/atualizados no pgAdmin:
@@ -74,8 +78,11 @@ Comandos para verificação dos dados inseridos/atualizados no pgAdmin:
 SELECT * FROM integrante;  
 SELECT * FROM frentesdetrabalho;  
 SELECT * FROM atividades;  
-
-# Views implementadas
+SELECT matricula, nome, LENGTH(foto) as tamanho_foto FROM integrante WHERE foto IS NOT NULL;
+SELECT codigo, nome, LENGTH(arquivo_pdf) as tamanho_pdf FROM artigopublicado;
+SELECT codigo, nome, LENGTH(arquivo_pdf) as tamanho_pdf FROM livros;  
+---
+## Views implementadas
 
 Foram criadas duas views no banco de dados, usadas para facilitar consultas com dados agregados e organizados.  
 scripts/views.sql  
@@ -141,3 +148,26 @@ SELECT * FROM aluna;
 SELECT * FROM professora;  
 SELECT * FROM integrantefrente;  
 SELECT * FROM integranteatividade;  
+
+---
+## Inserção de dados binários
+
+* Inserção de Arquivos
+
+>Fotos de integrantes (formato JPG/PNG);  
+>PDFs de artigos e livros;  
+
+Como testar:
+```bash
+python -m tests.teste_dadobinario       # Teste de fotos
+python -m tests.teste_artigo_crud      # Teste de artigos com PDF
+python -m tests.teste_livro_crud       # Teste de livros com PDF 
+````
+
+Consulta de verificação no pgAdmin:
+
+```sql
+SELECT matricula, nome, LENGTH(foto) as tamanho_foto FROM integrante WHERE foto IS NOT NULL;
+SELECT codigo, nome, LENGTH(arquivo_pdf) as tamanho_pdf FROM artigopublicado;
+SELECT codigo, nome, LENGTH(arquivo_pdf) as tamanho_pdf FROM livros;
+````
