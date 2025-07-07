@@ -106,7 +106,8 @@ CREATE TABLE Livros (
     Nome VARCHAR(100) NOT NULL,
     Descricao TEXT NOT NULL,
     Editora VARCHAR(100) NOT NULL,
-    Estoque INT CHECK (Estoque >= 0)
+    Estoque INT CHECK (Estoque >= 0),
+    arquivo_pdf BYTEA
 );
 
 CREATE TABLE FrenteLivro (
@@ -130,7 +131,8 @@ CREATE TABLE ArtigoPublicado (
     Nome VARCHAR(100) NOT NULL,
     Publicacao VARCHAR(100) NOT NULL,
     Data DATE NOT NULL,
-    Autor VARCHAR(100) NOT NULL
+    Autor VARCHAR(100) NOT NULL,
+    arquivo_pdf BYTEA
 );
 
 CREATE TABLE FrenteArtigo (
@@ -208,3 +210,4 @@ CREATE TABLE FrenteColecao (
     FOREIGN KEY (CodigoFrente) REFERENCES FrentesDeTrabalho(Codigo),
     FOREIGN KEY (CodigoColecao) REFERENCES ColecaoProjetos(Codigo)
 );
+
