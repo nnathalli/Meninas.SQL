@@ -61,8 +61,8 @@ Conexão bem-sucedida com o banco!
 >1 - Integrante;  
 >2 - FrentesDeTrabalho;  
 >3 - Atividades;  
->4 - Livros ();  
->5 - Artigos ().  
+>4 - Livros (para facilitar inserção de dados binários);  
+>5 - Artigos (para facilitar inserção de dados binários).  
 
 Comandos para os testes do CRUD:
 ```
@@ -152,10 +152,13 @@ SELECT * FROM integranteatividade;
 ---
 ## Inserção de dados binários
 
+As funções de upload e download desses arquivos foram integradas nos CRUDs e testadas por meio de scripts em `tests/`, garantindo que os dados binários sejam corretamente armazenados e recuperados.  
+
 * Inserção de Arquivos
 
->Fotos de integrantes (formato JPG/PNG);  
->PDFs de artigos e livros;  
+>Foto (imagem) em Integrante: permite armazenar imagens das participantes de forma segura no banco, utilizando o tipo `BYTEA`.
+
+>Arquivo PDF em Livros e Artigos: possibilita o armazenamento e posterior download de arquivos PDF vinculados aos registros de livros e artigos publicados no projeto, também utilizando o tipo `BYTEA`.
 
 Como testar:
 ```bash

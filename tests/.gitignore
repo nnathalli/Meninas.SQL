@@ -1,0 +1,7 @@
+
+tests/imagens/foto_teste.jpg
+tests/imagens/*.jpg
+tests/imagens/*.png
+
+
+tests/imagens/*.pdf
