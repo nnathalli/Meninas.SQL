@@ -149,7 +149,8 @@ SELECT * FROM integrante;
 SELECT * FROM aluna;  
 SELECT * FROM professora;  
 SELECT * FROM integrantefrente;  
-SELECT * FROM integranteatividade;  
+SELECT * FROM integranteatividade.
+```  
 
 ---
 
