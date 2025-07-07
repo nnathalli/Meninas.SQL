@@ -4,7 +4,8 @@ CREATE TABLE Integrante (
 	DataNasc DATE NOT NULL,
 	DataEntrada DATE NOT NULL,
 	Email VARCHAR(100) NOT NULL,
-	Telefone VARCHAR(15) NOT NULL
+	Telefone VARCHAR(15) NOT NULL,
+    foto BYTEA
 );
 
 CREATE TABLE Professora (

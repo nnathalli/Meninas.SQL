@@ -1,3 +1,4 @@
+import psycopg2
 from database.DatabaseConnection import DatabaseConnection
 
 def create_integrante(matricula, nome, data_nasc, data_entrada, email, telefone):
@@ -53,5 +54,24 @@ def delete_integrante(matricula):
         conn.commit()
     except Exception as e:
         print("Erro ao deletar integrante:", e)
+    finally:
+        db.disconnect()
+
+def adicionar_foto_integrante(matricula, caminho_imagem):
+    db = DatabaseConnection()
+    conn = db.connect()
+    try:
+        with open(caminho_imagem, 'rb') as f:
+            foto_binario = f.read()
+        cur = conn.cursor()
+        cur.execute("""
+            UPDATE integrante
+            SET foto = %s
+            WHERE matricula = %s
+        """, (psycopg2.Binary(foto_binario), matricula))
+        conn.commit()
+        print("Foto inserida com sucesso.")
+    except Exception as e:
+        print("Erro ao inserir foto:", e)
     finally:
         db.disconnect()
