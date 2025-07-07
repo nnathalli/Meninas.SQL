@@ -109,3 +109,34 @@ Localização: scripts/views.sql/view_maratona.sql
 
 Consulta: SELECT * FROM view_maratona;
 
+---
+
+## Procedure
+scripts/procedure/cadastro_integrante.sql  
+
+A procedure implementa a lógica completa de cadastro de um novo integrante, com validações e relacionamento:
+
+- Evita cadastro duplicado por e-mail ou matrícula;  
+- Bloqueia conflito entre `aluna` e `professora`;  
+- Insere na tabela `Integrante`;  
+- Insere na tabela específica (Aluna ou Professora);  
+- Vincula à frente de trabalho (se fornecido);  
+- Associa automaticamente às atividades recentes da frente (últimos 30 dias).  
+
+### 📁 Teste SQL da Procedure
+O arquivo de teste está em:  
+scripts/procedure/teste_call_procedure.sql  
+
+### ✅ Como executar no pgAdmin
+Abra o Query Tool e rode:  
+
+```sql
+\i scripts/procedures/testes/teste_cadastrar_integrante_com_vinculo.sql
+
+
+Consulta para verificar os resultados:  
+SELECT * FROM integrante;  
+SELECT * FROM aluna;  
+SELECT * FROM professora;  
+SELECT * FROM integrantefrente;  
+SELECT * FROM integranteatividade;  
