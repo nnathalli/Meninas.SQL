@@ -152,6 +152,7 @@ SELECT * FROM integrantefrente;
 SELECT * FROM integranteatividade;  
 
 ---
+
 ## Inserção de dados binários
 
 As funções de upload e download desses arquivos foram integradas nos CRUDs e testadas por meio de scripts em `tests/`, garantindo que os dados binários sejam corretamente armazenados e recuperados.  
