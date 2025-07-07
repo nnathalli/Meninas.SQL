@@ -73,14 +73,16 @@ python -m tests.teste_artigo_crud
 python -m tests.teste_livro_crud
 ```
 
-Comandos para verificação dos dados inseridos/atualizados no pgAdmin:
+Comandos para verificação dos dados inseridos/atualizados no pgAdmin:  
 
 SELECT * FROM integrante;  
 SELECT * FROM frentesdetrabalho;  
 SELECT * FROM atividades;  
 SELECT matricula, nome, LENGTH(foto) as tamanho_foto FROM integrante WHERE foto IS NOT NULL;
 SELECT codigo, nome, LENGTH(arquivo_pdf) as tamanho_pdf FROM artigopublicado;
-SELECT codigo, nome, LENGTH(arquivo_pdf) as tamanho_pdf FROM livros;  
+SELECT codigo, nome, LENGTH(arquivo_pdf) as tamanho_pdf FROM livros;
+
+
 ---
 ## Views implementadas
 
