@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meninas.SQL - Dashboard</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Light gray background */
+        }
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e2e8f0;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+        /* Modal styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            transform: translateY(-20px);
+            transition: transform 0.3s ease;
+        }
+        .modal-overlay.show .modal-content {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-purple-600 to-indigo-700 text-white p-4 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-3xl font-bold rounded-md">Meninas.SQL</h1>
+            <nav>
+                <ul class="flex space-x-6">
+                    <li><a href="#dashboard" class="hover:text-purple-200 transition duration-300 ease-in-out">Dashboard</a></li>
+                    <li><a href="#maratonas" class="hover:text-purple-200 transition duration-300 ease-in-out">Maratonas</a></li>
+                    <li><a href="#integrantes" class="hover:text-purple-200 transition duration-300 ease-in-out">Integrantes</a></li>
+                    <li><a href="#frentes" class="hover:text-purple-200 transition duration-300 ease-in-out">Frentes de Trabalho</a></li>
+                    <li><a href="#atividades" class="hover:text-purple-200 transition duration-300 ease-in-out">Atividades</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="container mx-auto p-6 flex-grow">
+
+        <!-- Dashboard Gerencial Section -->
+        <section id="dashboard" class="bg-white p-8 rounded-xl shadow-lg mb-8">
+            <h2 class="text-3xl font-semibold text-gray-800 mb-6 border-b-2 border-purple-500 pb-2">Dashboard Gerencial</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Card 1: Total Frentes de Trabalho -->
+                <div class="bg-purple-100 p-6 rounded-lg shadow-md flex items-center space-x-4">
+                    <div class="bg-purple-500 p-3 rounded-full text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-gray-600 text-sm">Total de Frentes de Trabalho</p>
+                        <p class="text-2xl font-bold text-purple-800" id="total-frentes">2</p>
+                    </div>
+                </div>
+                <!-- Card 2: Total Integrantes -->
+                <div class="bg-blue-100 p-6 rounded-lg shadow-md flex items-center space-x-4">
+                    <div class="bg-blue-500 p-3 rounded-full text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H2v-2a4 4 0 014-4h12.356M17 20h2v-2a3 3 0 00-2-3.857M12 11a3 3 0 100-6 3 3 0 000 6zm-7 9a4 4 0 01-4-4v-2a3 3 0 013-3h2.356" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-gray-600 text-sm">Total de Integrantes</p>
+                        <p class="text-2xl font-bold text-blue-800" id="total-integrantes">3</p>
+                    </div>
+                </div>
+                <!-- Card 3: Total Atividades -->
+                <div class="bg-green-100 p-6 rounded-lg shadow-md flex items-center space-x-4">
+                    <div class="bg-green-500 p-3 rounded-full text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-gray-600 text-sm">Total de Atividades</p>
+                        <p class="text-2xl font-bold text-green-800" id="total-atividades">2</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="text-2xl font-semibold text-gray-700 mt-8 mb-4">Visão Geral das Frentes de Trabalho</h3>
+            <div class="overflow-x-auto rounded-lg shadow-md">
+                <table class="min-w-full bg-white border border-gray-200">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="py-3 px-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider rounded-tl-lg">Nome da Frente</th>
+                            <th class="py-3 px-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">Tipo</th>
+                            <th class="py-3 px-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">Total Integrantes</th>
+                            <th class="py-3 px-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">Integrantes</th>
+                            <th class="py-3 px-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">Total Atividades</th>
+                            <th class="py-3 px-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">Última Atividade</th>
+                            <th class="py-3 px-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider rounded-tr-lg">Escola Parceira</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dashboard-frentes-table-body" class="divide-y divide-gray-200">
+                        <!-- Sample data from view_dashboard_gerencial -->
+                        <tr class="hover:bg-gray-50">
+                            <td class="py-3 px-4 whitespace-nowrap">Desenvolvimento de Jogos</td>
+                            <td class="py-3 px-4 whitespace-nowrap">Extensão</td>
+                            <td class="py-3 px-4 whitespace-nowrap">2</td>
+                            <td class="py-3 px-4 whitespace-nowrap">Ana Silva, Carla Oliveira</td>
+                            <td class="py-3 px-4 whitespace-nowrap">1</td>
+                            <td class="py-3 px-4 whitespace-nowrap">2024-03-15</td>
+                            <td class="py-3 px-4 whitespace-nowrap">CEF 01 de Brasília</td>
+                        </tr>
+                        <tr class="hover:bg-gray-50">
+                            <td class="py-3 px-4 whitespace-nowrap">Oficina de Python</td>
+                            <td class="py-3 px-4 whitespace-nowrap">Ensino</td>
+                            <td class="py-3 px-4 whitespace-nowrap">1</td>
+                            <td class="py-3 px-4 whitespace-nowrap">Mariana Souza</td>
+                            <td class="py-3 px-4 whitespace-nowrap">1</td>
+                            <td class="py-3 px-4 whitespace-nowrap">2024-03-20</td>
+                            <td class="py-3 px-4 whitespace-nowrap">CEM 02 de Taguatinga</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Maratonas de Programação Section -->
+        <section id="maratonas" class="bg-white p-8 rounded-xl shadow-lg mb-8">
+            <h2 class="text-3xl font-semibold text-gray-800 mb-6 border-b-2 border-purple-500 pb-2">Maratonas de Programação</h2>
+            <div class="overflow-x-auto rounded-lg shadow-md">
+                <table class="min-w-full bg-white border border-gray-200">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="py-3 px-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider rounded-tl-lg">Nome da Maratona</th>
+                            <th class="py-3 px-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">Edição</th>
+                            <th class="py-3 px-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">Premiação</th>
+                            <th class="py-3 px-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">Total Equipes</th>
+                            <th class="py-3 px-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">Total Participantes</th>
+                            <th class="py-3 px-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">Equipes</th>
+                            <th class="py-3 px-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">Classificação</th>
+                            <th class="py-3 px-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider rounded-tr-lg">Perguntas (JSON)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="maratonas-table-body" class="divide-y divide-gray-200">
+                        <!-- Sample data from view_maratonas -->
+                        <tr class="hover:bg-gray-50">
+                            <td class="py-3 px-4 whitespace-nowrap">Maratona Meninas na Computação</td>
+                            <td class="py-3 px-4 whitespace-nowrap">2024</td>
+                            <td class="py-3 px-4 whitespace-nowrap">Bolsa de estudos + Mentoria</td>
+                            <td class="py-3 px-4 whitespace-nowrap">2</td>
+                            <td class="py-3 px-4 whitespace-nowrap">4</td>
+                            <td class="py-3 px-4 whitespace-nowrap">CodeGirls UNB, Python Queens</td>
+                            <td class="py-3 px-4 whitespace-nowrap">1º Lugar (CodeGirls UNB), 2º Lugar (Python Queens)</td>
+                            <td class="py-3 px-4 text-xs">
+                                <pre class="bg-gray-100 p-2 rounded-md overflow-auto max-h-24"><code>[{"enunciado": "Implemente uma função que calcule o fatorial de um número", "edicao": "2024"}, {"enunciado": "Crie um algoritmo para ordenar uma lista de nomes", "edicao": "2024"}]</code></pre>
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-gray-50">
+                            <td class="py-3 px-4 whitespace-nowrap">Hackathon Elas Programam</td>
+                            <td class="py-3 px-4 whitespace-nowrap">2023</td>
+                            <td class="py-3 px-4 whitespace-nowrap">Notebook + Curso Avançado</td>
+                            <td class="py-3 px-4 whitespace-nowrap">1</td>
+                            <td class="py-3 px-4 whitespace-nowrap">2</td>
+                            <td class="py-3 px-4 whitespace-nowrap">Algorithm Sisters</td>
+                            <td class="py-3 px-4 whitespace-nowrap">1º Lugar (Algorithm Sisters)</td>
+                            <td class="py-3 px-4 text-xs">
+                                <pre class="bg-gray-100 p-2 rounded-md overflow-auto max-h-24"><code>[{"enunciado": "Desenvolva um CRUD simples em Python", "edicao": "2023"}]</code></pre>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Integrantes Management Section -->
+        <section id="integrantes" class="bg-white p-8 rounded-xl shadow-lg mb-8">
+            <h2 class="text-3xl font-semibold text-gray-800 mb-6 border-b-2 border-purple-500 pb-2">Gerenciar Integrantes</h2>
+
+            <h3 class="text-2xl font-semibold text-gray-700 mt-8 mb-4">Cadastrar Novo Integrante</h3>
+            <json id="json" class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 p-6 rounded-lg shadow-inner">
+                <input type="hidden" id="integrante-edit-index">
+                <div class="flex flex-col">
+                    <label for="integrante-matricula" class="text-gray-700 text-sm font-medium mb-1">Matrícula:</label>
+                    <input type="text" id="integrante-matricula" name="matricula" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+                </div>
+                <div class="flex flex-col">
+                    <label for="integrante-nome" class="text-gray-700 text-sm font-medium mb-1">Nome:</label>
+                    <input type="text" id="integrante-nome" name="nome" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+                </div>
+                <div class="flex flex-col">
+                    <label for="integrante-data-nasc" class="text-gray-700 text-sm font-medium mb-1">Data de Nascimento:</label>
+                    <input type="date" id="integrante-data-nasc" name="dataNasc" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+                </div>
+                <div class="flex flex-col">
+                    <label for="integrante-data-entrada" class="text-gray-700 text-sm font-medium mb-1">Data de Entrada:</label>
+                    <input type="date" id="integrante-data-entrada" name="dataEntrada" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+                </div>
+                <div class="flex flex-col">
+                    <label for="integrante-email" class="text-gray-700 text-sm font-medium mb-1">Email:</label>
+                    <input type="email" id="integrante-email" name="email" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+                </div>
+                <div class="flex flex-col">
+                    <label for="integrante-telefone" class="text-gray-700 text-sm font-medium mb-1">Telefone:</label>
+                    <input type="tel" id="integrante-telefone" name="telefone" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="(XX) XXXXX-XXXX">
+                </div>
+                <div class="col-span-1 md:col-span-2 flex justify-end">
+                    <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300 ease-in-out shadow-md">Cadastrar Integrante</button>
+                </div>
+            </json>
+
+            <h3 class="text-2xl font-semibold text-gray-700 mt-8 mb-4">Lista de Integrantes</h3>
+            <div class="overflow-x-auto rounded-lg shadow-md">
+                <table class="min-w-full bg-white border border-gray-200">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="py-3 px-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider rounded-tl-lg">Matrícula</th>
+                            <th class="py-3 px-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">Nome</th>
+                            <th class="py-3 px-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">Data Nasc.</th>
+                            <th class="py-3 px-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">Data Entrada</th>
+                            <th class="py-3 px-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">Email</th>
+                            <th class="py-3 px-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">Telefone</th>
+                            <th class="py-3 px-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider rounded-tr-lg">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="integrantes-table-body" class="divide-y divide-gray-200">
+                        <!-- Integrantes will be rendered here by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Frentes de Trabalho Management Section -->
+        <section id="frentes" class="bg-white p-8 rounded-xl shadow-lg mb-8">
+            <h2 class="text-3xl font-semibold text-gray-800 mb-6 border-b-2 border-purple-500 pb-2">Gerenciar Frentes de Trabalho</h2>
+
+            <h3 class="text-2xl font-semibold text-gray-700 mt-8 mb-4">Cadastrar Nova Frente</h3>
+            <json id="json" class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 p-6 rounded-lg shadow-inner">
+                <input type="hidden" id="frente-edit-index">
+                <div class="flex flex-col">
+                    <label for="frente-codigo" class="text-gray-700 text-sm font-medium mb-1">Código:</label>
+                    <input type="text" id="frente-codigo" name="codigo" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+                </div>
+                <div class="flex flex-col">
+                    <label for="frente-nome" class="text-gray-700 text-sm font-medium mb-1">Nome:</label>
+                    <input type="text" id="frente-nome" name="nome" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+                </div>
+                <div class="flex flex-col">
+                    <label for="frente-tipo" class="text-gray-700 text-sm font-medium mb-1">Tipo:</label>
+                    <select id="frente-tipo" name="tipo" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+                        <option value="">Selecione</option>
+                        <option value="Ensino">Ensino</option>
+                        <option value="Extensão">Extensão</option>
+                        <option value="Pesquisa">Pesquisa</option>
+                    </select>
+                </div>
+                <div class="flex flex-col col-span-1 md:col-span-2">
+                    <label for="frente-descricao" class="text-gray-700 text-sm font-medium mb-1">Descrição:</label>
+                    <textarea id="frente-descricao" name="descricao" rows="3" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500" required></textarea>
+                </div>
+                <div class="flex flex-col">
+                    <label for="frente-data-criacao" class="text-gray-700 text-sm font-medium mb-1">Data de Criação:</label>
+                    <input type="date" id="frente-data-criacao" name="dataCriacao" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+                </div>
+                <div class="col-span-1 md:col-span-2 flex justify-end">
+                    <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300 ease-in-out shadow-md">Cadastrar Frente</button>
+                </div>
+            </json>
+
+            <h3 class="text-2xl font-semibold text-gray-700 mt-8 mb-4">Lista de Frentes de Trabalho</h3>
+            <div class="overflow-x-auto rounded-lg shadow-md">
+                <table class="min-w-full bg-white border border-gray-200">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="py-3 px-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider rounded-tl-lg">Código</th>
+                            <th class="py-3 px-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">Nome</th>
+                            <th class="py-3 px-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">Tipo</th>
+                            <th class="py-3 px-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">Descrição</th>
+                            <th class="py-3 px-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">Data de Criação</th>
+                            <th class="py-3 px-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider rounded-tr-lg">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="frentes-table-body" class="divide-y divide-gray-200">
+                        <!-- Frentes will be rendered here by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Atividades Management Section -->
+        <section id="atividades" class="bg-white p-8 rounded-xl shadow-lg mb-8">
+            <h2 class="text-3xl font-semibold text-gray-800 mb-6 border-b-2 border-purple-500 pb-2">Gerenciar Atividades</h2>
+
+            <h3 class="text-2xl font-semibold text-gray-700 mt-8 mb-4">Cadastrar Nova Atividade</h3>
+            <json id="json-atividade" class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 p-6 rounded-lg shadow-inner">
+                <input type="hidden" id="atividade-edit-index">
+                <div class="flex flex-col">
+                    <label for="atividade-codigo" class="text-gray-700 text-sm font-medium mb-1">Código:</label>
+                    <input type="text" id="atividade-codigo" name="codigo" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+                </div>
+                <div class="flex flex-col">
+                    <label for="atividade-nome" class="text-gray-700 text-sm font-medium mb-1">Nome:</label>
+                    <input type="text" id="atividade-nome" name="nome" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+                </div>
+                <div class="flex flex-col col-span-1 md:col-span-2">
+                    <label for="atividade-descricao" class="text-gray-700 text-sm font-medium mb-1">Descrição:</label>
+                    <textarea id="atividade-descricao" name="descricao" rows="3" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500" required></textarea>
+                </div>
+                <div class="flex flex-col">
+                    <label for="atividade-tipo" class="text-gray-700 text-sm font-medium mb-1">Tipo:</label>
+                    <select id="atividade-tipo" name="tipo" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+                        <option value="">Selecione</option>
+                        <option value="Workshop">Workshop</option>
+                        <option value="Aula">Aula</option>
+                        <option value="Palestra">Palestra</option>
+                    </select>
+                </div>
+                <div class="flex flex-col">
+                    <label for="atividade-local" class="text-gray-700 text-sm font-medium mb-1">Local:</label>
+                    <input type="text" id="atividade-local" name="local" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+                </div>
+                <div class="flex flex-col">
+                    <label for="atividade-datahora" class="text-gray-700 text-sm font-medium mb-1">Data e Hora:</label>
+                    <input type="datetime-local" id="atividade-datahora" name="dataHora" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+                </div>
+                <div class="flex flex-col">
+                    <label for="atividade-duracao" class="text-gray-700 text-sm font-medium mb-1">Duração (HH:MM:SS):</label>
+                    <input type="text" id="atividade-duracao" name="duracao" placeholder="HH:MM:SS" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500" required pattern="^([0-1]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$">
+                </div>
+                <div class="col-span-1 md:col-span-2 flex justify-end">
+                    <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300 ease-in-out shadow-md">Cadastrar Atividade</button>
+                </div>
+            </json>
+
+            <h3 class="text-2xl font-semibold text-gray-700 mt-8 mb-4">Lista de Atividades</h3>
+            <div class="overflow-x-auto rounded-lg shadow-md">
+                <table class="min-w-full bg-white border border-gray-200">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="py-3 px-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider rounded-tl-lg">Código</th>
+                            <th class="py-3 px-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">Nome</th>
+                            <th class="py-3 px-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">Tipo</th>
+                            <th class="py-3 px-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">Local</th>
+                            <th class="py-3 px-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">Data e Hora</th>
+                            <th class="py-3 px-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">Duração</th>
+                            <th class="py-3 px-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider rounded-tr-lg">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="atividades-table-body" class="divide-y divide-gray-200">
+                        <!-- Atividades will be rendered here by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white p-4 text-center mt-8 rounded-t-xl">
+        <p>&copy; 2024 Meninas.SQL. Todos os direitos reservados.</p>
+    </footer>
+
+    <!-- Custom Confirmation Modal -->
+    <div id="confirmation-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="text-xl font-semibold text-gray-800 mb-4" id="modal-title">Confirmar Ação</h3>
+            <p class="text-gray-700 mb-6" id="modal-message">Você tem certeza que deseja realizar esta ação?</p>
+            <div class="flex justify-center space-x-4">
+                <button id="modal-cancel-btn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-5 rounded-lg transition duration-300 ease-in-out">Cancelar</button>
+                <button id="modal-confirm-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-5 rounded-lg transition duration-300 ease-in-out">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+            // Function to format date for display
+        const formatDate = (dateString) => {
+            const date = new Date(dateString + 'T00:00:00'); // Add T00:00:00 to ensure correct timezone interpretation
+            return date.toLocaleDateString('pt-BR');
+        };
+
+        // Function to format datetime-local for display
+        const formatDateTime = (dateTimeString) => {
+            const date = new Date(dateTimeString);
+            return date.toLocaleString('pt-BR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+        };
+
+        // Render Integrantes Table
+        const renderIntegrantes = () => {
+            const tbody = document.getElementById('integrantes-table-body');
+            tbody.innerHTML = ''; // Clear existing rows
+            integrantes.forEach((integrante, index) => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td class="py-3 px-4 whitespace-nowrap">${integrante.matricula}</td>
+                    <td class="py-3 px-4 whitespace-nowrap">${integrante.nome}</td>
+                    <td class="py-3 px-4 whitespace-nowrap">${formatDate(integrante.dataNasc)}</td>
+                    <td class="py-3 px-4 whitespace-nowrap">${formatDate(integrante.dataEntrada)}</td>
+                    <td class="py-3 px-4 whitespace-nowrap">${integrante.email}</td>
+                    <td class="py-3 px-4 whitespace-nowrap">${integrante.telefone}</td>
+                    <td class="py-3 px-4 whitespace-nowrap">
+                        <button class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded-md text-sm mr-2 edit-btn" data-index="${index}" data-type="integrante">Editar</button>
+                        <button class="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded-md text-sm delete-btn" data-index="${index}" data-type="integrante">Excluir</button>
+                    </td>
+                `;
+            });
+            document.getElementById('total-integrantes').textContent = integrantes.length;
+        };
+
+        // Render Frentes Table
+        const renderFrentes = () => {
+            const tbody = document.getElementById('frentes-table-body');
+            tbody.innerHTML = ''; // Clear existing rows
+            frentes.forEach((frente, index) => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td class="py-3 px-4 whitespace-nowrap">${frente.codigo}</td>
+                    <td class="py-3 px-4 whitespace-nowrap">${frente.nome}</td>
+                    <td class="py-3 px-4 whitespace-nowrap">${frente.tipo}</td>
+                    <td class="py-3 px-4">${frente.descricao}</td>
+                    <td class="py-3 px-4 whitespace-nowrap">${formatDate(frente.dataCriacao)}</td>
+                    <td class="py-3 px-4 whitespace-nowrap">
+                        <button class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded-md text-sm mr-2 edit-btn" data-index="${index}" data-type="frente">Editar</button>
+                        <button class="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded-md text-sm delete-btn" data-index="${index}" data-type="frente">Excluir</button>
+                    </td>
+                `;
+            });
+            document.getElementById('total-frentes').textContent = frentes.length;
+        };
+
+        // Render Atividades Table
+        const renderAtividades = () => {
+            const tbody = document.getElementById('atividades-table-body');
+            tbody.innerHTML = ''; // Clear existing rows
+            atividades.forEach((atividade, index) => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td class="py-3 px-4 whitespace-nowrap">${atividade.codigo}</td>
+                    <td class="py-3 px-4 whitespace-nowrap">${atividade.nome}</td>
+                    <td class="py-3 px-4 whitespace-nowrap">${atividade.tipo}</td>
+                    <td class="py-3 px-4 whitespace-nowrap">${atividade.local}</td>
+                    <td class="py-3 px-4 whitespace-nowrap">${formatDateTime(atividade.dataHora)}</td>
+                    <td class="py-3 px-4 whitespace-nowrap">${atividade.duracao}</td>
+                    <td class="py-3 px-4 whitespace-nowrap">
+                        <button class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded-md text-sm mr-2 edit-btn" data-index="${index}" data-type="atividade">Editar</button>
+                        <button class="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded-md text-sm delete-btn" data-index="${index}" data-type="atividade">Excluir</button>
+                    </td>
+                `;
+            });
+            document.getElementById('total-atividades').textContent = atividades.length;
+        };
+
+        // Confirmation Modal Logic
+        const confirmationModal = document.getElementById('confirmation-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalMessage = document.getElementById('modal-message');
+        const modalConfirmBtn = document.getElementById('modal-confirm-btn');
+        const modalCancelBtn = document.getElementById('modal-cancel-btn');
+
+        let confirmCallback = null;
+
+        const showConfirmationModal = (title, message, onConfirm) => {
+            modalTitle.textContent = title;
+            modalMessage.textContent = message;
+            confirmCallback = onConfirm;
+            confirmationModal.classList.add('show');
+        };
+
+        const hideConfirmationModal = () => {
+            confirmationModal.classList.remove('show');
+            confirmCallback = null;
+        };
+
+        modalConfirmBtn.addEventListener('click', () => {
+            if (confirmCallback) {
+                confirmCallback(true);
+            }
+            hideConfirmationModal();
+        });
+
+        modalCancelBtn.addEventListener('click', () => {
+            if (confirmCallback) {
+                confirmCallback(false);
+            }
+            hideConfirmationModal();
+        });
+
+        confirmationModal.addEventListener('click', (e) => {
+            if (e.target === confirmationModal) {
+                hideConfirmationModal();
+            }
+        });
+
+
+        // Form Submission Handlers
+        document.getElementById('json-integrante').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const json = e.target;
+            const index = json.elements['integrante-edit-index'].value;
+            const newIntegrante = {
+                matricula: json.elements['integrante-matricula'].value,
+                nome: json.elements['integrante-nome'].value,
+                dataNasc: json.elements['integrante-data-nasc'].value,
+                dataEntrada: json.elements['integrante-data-entrada'].value,
+                email: json.elements['integrante-email'].value,
+                telefone: json.elements['integrante-telefone'].value
+            };
+
+            if (index === '') {
+                // Add new
+                integrantes.push(newIntegrante);
+            } else {
+                // Update existing
+                integrantes[parseInt(index)] = newIntegrante;
+                json.elements['integrante-edit-index'].value = ''; // Clear index after edit
+            }
+            renderIntegrantes();
+            json.reset();
+        });
+
+        document.getElementById('form-frente').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const JSON= e.target;
+            const index = json.elements['frente-edit-index'].value;
+            const newFrente = {
+                codigo: json.elements['frente-codigo'].value,
+                nome: json.elements['frente-nome'].value,
+                tipo: json.elements['frente-tipo'].value,
+                descricao: json.elements['frente-descricao'].value,
+                dataCriacao: json.elements['frente-data-criacao'].value
+            };
+
+            if (index === '') {
+                // Add new
+                frentes.push(newFrente);
+            } else {
+                // Update existing
+                frentes[parseInt(index)] = newFrente;
+                json.elements['frente-edit-index'].value = ''; // Clear index after edit
+            }
+            renderFrentes();
+            json.reset(); 
+        });
+
+        document.getElementById('form-atividade').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const index = form.elements['atividade-edit-index'].value;
+
+    const newAtividade = {
+        codigo: form.elements['atividade-codigo'].value,
+        nome: form.elements['atividade-nome'].value,
+        descricao: form.elements['atividade-descricao'].value,
+        tipo: form.elements['atividade-tipo'].value,
+        local: form.elements['atividade-local'].value,
+        dataHora: form.elements['atividade-datahora'].value,
+        duracao: form.elements['atividade-duracao'].value
+    };
+
+    if (index === '') {
+        // Adicionar nova atividade
+        atividades.push(newAtividade);
+    } else {
+        // Atualizar atividade existente
+        atividades[parseInt(index)] = newAtividade;
+        form.elements['atividade-edit-index'].value = ''; // Limpar índice após edição
+    }
+
+    renderAtividades(); // Atualiza a tabela
+    form.reset();       // Limpa o formulário
+});
+
+
+        // Edit and Delete Button Handlers (using event delegation)
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('edit-btn')) {
+                const index = parseInt(e.target.dataset.index);
+                const type = e.target.dataset.type;
+
+                if (type === 'integrante') {
+                    const integrante = integrantes[index];
+                    document.getElementById('integrante-edit-index').value = index;
+                    document.getElementById('integrante-matricula').value = integrante.matricula;
+                    document.getElementById('integrante-nome').value = integrante.nome;
+                    document.getElementById('integrante-data-nasc').value = integrante.dataNasc;
+                    document.getElementById('integrante-data-entrada').value = integrante.dataEntrada;
+                    document.getElementById('integrante-email').value = integrante.email;
+                    document.getElementById('integrante-telefone').value = integrante.telefone;
+                } else if (type === 'frente') {
+                    const frente = frentes[index];
+                    document.getElementById('frente-edit-index').value = index;
+                    document.getElementById('frente-codigo').value = frente.codigo;
+                    document.getElementById('frente-nome').value = frente.nome;
+                    document.getElementById('frente-tipo').value = frente.tipo;
+                    document.getElementById('frente-descricao').value = frente.descricao;
+                    document.getElementById('frente-data-criacao').value = frente.dataCriacao;
+                } else if (type === 'atividade') {
+                    const atividade = atividades[index];
+                    document.getElementById('atividade-edit-index').value = index;
+                    document.getElementById('atividade-codigo').value = atividade.codigo;
+                    document.getElementById('atividade-nome').value = atividade.nome;
+                    document.getElementById('atividade-descricao').value = atividade.descricao;
+                    document.getElementById('atividade-tipo').value = atividade.tipo;
+                    document.getElementById('atividade-local').value = atividade.local;
+                    document.getElementById('atividade-datahora').value = atividade.dataHora;
+                    document.getElementById('atividade-duracao').value = atividade.duracao;
+                }
+            } else if (e.target.classList.contains('delete-btn')) {
+                const index = parseInt(e.target.dataset.index);
+                const type = e.target.dataset.type;
+
+                showConfirmationModal('Confirmar Exclusão', `Tem certeza que deseja excluir este(a) ${type}?`, (confirmed) => {
+                    if (confirmed) {
+                        if (type === 'integrante') {
+                            integrantes.splice(index, 1);
+                            renderIntegrantes();
+                        } else if (type === 'frente') {
+                            frentes.splice(index, 1);
+                            renderFrentes();
+                        } else if (type === 'atividade') {
+                            atividades.splice(index, 1);
+                            renderAtividades();
+                        }
+                    }
+                });
+            }
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Initial render on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            renderIntegrantes();
+            renderFrentes();
+            renderAtividades();
+        });
+    </script> 
+    <script src="./script.js"></script>
+</body>
+</html>
