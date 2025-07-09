@@ -1,5 +1,52 @@
-import psycopg2
-from database.DatabaseConnection import DatabaseConnection
+from db_connection.DatabaseConnection import DatabaseConnection
+
+def get_integrantes():
+    db = DatabaseConnection()
+    conn = db.connect()
+    try:
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT matricula, nome, datanasc, dataentrada, email, telefone
+            FROM integrante
+        """)
+        rows = cur.fetchall()
+        return [
+            {
+                'matricula': r[0],
+                'nome': r[1],
+                'data_nasc': str(r[2]),
+                'data_entrada': str(r[3]),
+                'email': r[4],
+                'telefone': r[5]
+            } for r in rows
+        ]
+    finally:
+        db.disconnect()
+
+
+def get_integrante_por_matricula(matricula):
+    db = DatabaseConnection()
+    conn = db.connect()
+    try:
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT matricula, nome, datanasc, dataentrada, email, telefone
+            FROM integrante WHERE matricula = %s
+        """, (matricula,))
+        r = cur.fetchone()
+        if r:
+            return {
+                'matricula': r[0],
+                'nome': r[1],
+                'data_nasc': str(r[2]),
+                'data_entrada': str(r[3]),
+                'email': r[4],
+                'telefone': r[5]
+            }
+        return None
+    finally:
+        db.disconnect()
+
 
 def create_integrante(matricula, nome, data_nasc, data_entrada, email, telefone):
     db = DatabaseConnection()
@@ -11,25 +58,11 @@ def create_integrante(matricula, nome, data_nasc, data_entrada, email, telefone)
             VALUES (%s, %s, %s, %s, %s, %s)
         """, (matricula, nome, data_nasc, data_entrada, email, telefone))
         conn.commit()
-    except Exception as e:
-        print("Erro ao criar integrante:", e)
     finally:
         db.disconnect()
 
-def get_integrantes():
-    db = DatabaseConnection()
-    conn = db.connect()
-    try:
-        cur = conn.cursor()
-        cur.execute("SELECT * FROM integrante")
-        return cur.fetchall()
-    except Exception as e:
-        print("Erro ao buscar integrantes:", e)
-        return []
-    finally:
-        db.disconnect()
 
-def update_integrante(matricula, nome, data_nasc, data_entrada, email, telefone):
+def update_integrante(matricula, data):
     db = DatabaseConnection()
     conn = db.connect()
     try:
@@ -38,12 +71,14 @@ def update_integrante(matricula, nome, data_nasc, data_entrada, email, telefone)
             UPDATE integrante
             SET nome = %s, datanasc = %s, dataentrada = %s, email = %s, telefone = %s
             WHERE matricula = %s
-        """, (nome, data_nasc, data_entrada, email, telefone, matricula))
+        """, (
+            data['nome'], data['data_nasc'], data['data_entrada'],
+            data['email'], data['telefone'], matricula
+        ))
         conn.commit()
-    except Exception as e:
-        print("Erro ao atualizar integrante:", e)
     finally:
         db.disconnect()
+
 
 def delete_integrante(matricula):
     db = DatabaseConnection()
@@ -52,26 +87,5 @@ def delete_integrante(matricula):
         cur = conn.cursor()
         cur.execute("DELETE FROM integrante WHERE matricula = %s", (matricula,))
         conn.commit()
-    except Exception as e:
-        print("Erro ao deletar integrante:", e)
-    finally:
-        db.disconnect()
-
-def adicionar_foto_integrante(matricula, caminho_imagem):
-    db = DatabaseConnection()
-    conn = db.connect()
-    try:
-        with open(caminho_imagem, 'rb') as f:
-            foto_binario = f.read()
-        cur = conn.cursor()
-        cur.execute("""
-            UPDATE integrante
-            SET foto = %s
-            WHERE matricula = %s
-        """, (psycopg2.Binary(foto_binario), matricula))
-        conn.commit()
-        print("Foto inserida com sucesso.")
-    except Exception as e:
-        print("Erro ao inserir foto:", e)
     finally:
         db.disconnect()
