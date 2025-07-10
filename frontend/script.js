@@ -230,11 +230,11 @@ document.getElementById("form-professora").addEventListener("submit", async e =>
   e.preventDefault();
   const dados = {
     matricula: sessionStorage.getItem("matriculaCadastro"),
-    area_atuacao: document.getElementById("areaAtuacao").value,
+    areaatuacao: document.getElementById("areaatuacao").value,
     curriculo: document.getElementById("curriculo").value,
     instituicao: document.getElementById("instituicaoProf").value
   };
-
+    console.log("🔎 Dados enviados para /api/professoras:", dados);
   try {
     const res = await fetch("/api/professoras", {
       method: "POST",
