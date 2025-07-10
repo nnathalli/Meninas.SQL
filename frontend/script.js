@@ -1,198 +1,130 @@
-// script.js COMPLETO - Atualizado com fetch, remoção de arrays locais e renderização do banco
+function mostrarSecao(id) {
+  document.querySelectorAll(".secao").forEach(secao => secao.classList.remove("ativa"));
+  document.getElementById(id).classList.add("ativa");
+}
 
-document.addEventListener('DOMContentLoaded', () => {
-    // ----------- INTEGRANTE -----------
-    document.getElementById('form-integrante').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const form = e.target;
-        const formData = new FormData();
+document.addEventListener("DOMContentLoaded", () => {
+  carregarIntegrantes();
+  carregarFrentes();
+  carregarAtividades();
 
-        formData.append('matricula', form['integrante-matricula'].value);
-        formData.append('nome', form['integrante-nome'].value);
-        formData.append('data_nasc', form['integrante-data-nasc'].value);
-        formData.append('data_entrada', form['integrante-data-entrada'].value);
-        formData.append('email', form['integrante-email'].value);
-        formData.append('telefone', form['integrante-telefone'].value);
-        formData.append('foto', form['integrante-foto'].files[0]);
-
-        try {
-            const res = await fetch('/api/integrantes', {
-                method: 'POST',
-                body: formData
-            });
-            const data = await res.json();
-            if (res.ok) {
-                alert(data.mensagem);
-                form.reset();
-                renderIntegrantes();
-            } else {
-                alert('Erro: ' + data.erro);
-            }
-        } catch (err) {
-            alert('Erro de conexão: ' + err.message);
-        }
+  // INTEGRANTES
+  document.getElementById("form-integrante").addEventListener("submit", async e => {
+    e.preventDefault();
+    const data = {
+      matricula: matricula.value,
+      nome: nome.value,
+      data_nasc: data_nasc.value,
+      data_entrada: data_entrada.value,
+      email: email.value,
+      telefone: telefone.value
+    };
+    await fetch("/api/integrantes", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(data)
     });
-
-
-    const renderIntegrantes = async () => {
-        try {
-            const res = await fetch('/api/integrantes');
-            const integrantes = await res.json();
-            const tbody = document.getElementById('integrantes-table-body');
-            tbody.innerHTML = '';
-            integrantes.forEach((i, index) => {
-                const row = tbody.insertRow();
-                row.innerHTML = `
-                    <td>${i.matricula}</td>
-                    <td>${i.nome}</td>
-                    <td>${formatDate(i.data_nasc)}</td>
-                    <td>${formatDate(i.data_entrada)}</td>
-                    <td>${i.email}</td>
-                    <td>${i.telefone}</td>
-                    <td>
-                        <button class="edit-btn" data-id="${i.matricula}">Editar</button>
-                        <button class="delete-btn" data-id="${i.matricula}">Excluir</button>
-                    </td>
-                `;
-            });
-            document.getElementById('total-integrantes').textContent = integrantes.length;
-        } catch (err) {
-            console.error('Erro ao carregar integrantes:', err);
-        }
-    };
-
-    // ----------- FRENTE -----------
-    document.getElementById('form-frente').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const form = e.target;
-        const frente = {
-            codigo: form['frente-codigo'].value,
-            nome: form['frente-nome'].value,
-            tipo: form['frente-tipo'].value,
-            descricao: form['frente-descricao'].value,
-            data_criacao: form['frente-data-criacao'].value
-        };
-
-        try {
-            const res = await fetch('/api/frentes', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(frente)
-            });
-            const data = await res.json();
-            if (res.ok) {
-                alert(data.mensagem);
-                form.reset();
-                renderFrentes();
-            } else {
-                alert('Erro: ' + data.erro);
-            }
-        } catch (err) {
-            alert('Erro de conexão: ' + err.message);
-        }
-    });
-
-    const renderFrentes = async () => {
-        try {
-            const res = await fetch('/api/frentes');
-            const frentes = await res.json();
-            const tbody = document.getElementById('frentes-table-body');
-            tbody.innerHTML = '';
-            frentes.forEach((f, index) => {
-                const row = tbody.insertRow();
-                row.innerHTML = `
-                    <td>${f.codigo}</td>
-                    <td>${f.nome}</td>
-                    <td>${f.tipo}</td>
-                    <td>${f.descricao}</td>
-                    <td>${formatDate(f.data_criacao)}</td>
-                    <td>
-                        <button class="edit-btn" data-id="${f.codigo}">Editar</button>
-                        <button class="delete-btn" data-id="${f.codigo}">Excluir</button>
-                    </td>
-                `;
-            });
-            document.getElementById('total-frentes').textContent = frentes.length;
-        } catch (err) {
-            console.error('Erro ao carregar frentes:', err);
-        }
-    };
-
-    // ----------- ATIVIDADE -----------
-    document.getElementById('form-atividade').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const form = e.target;
-        const atividade = {
-            codigo: form['atividade-codigo'].value,
-            nome: form['atividade-nome'].value,
-            descricao: form['atividade-descricao'].value,
-            tipo: form['atividade-tipo'].value,
-            local: form['atividade-local'].value,
-            data_hora: form['atividade-datahora'].value,
-            duracao: form['atividade-duracao'].value
-        };
-
-        try {
-            const res = await fetch('/api/atividades', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(atividade)
-            });
-            const data = await res.json();
-            if (res.ok) {
-                alert(data.mensagem);
-                form.reset();
-                renderAtividades();
-            } else {
-                alert('Erro: ' + data.erro);
-            }
-        } catch (err) {
-            alert('Erro de conexão: ' + err.message);
-        }
-    });
-
-    const renderAtividades = async () => {
-        try {
-            const res = await fetch('/api/atividades');
-            const atividades = await res.json();
-            const tbody = document.getElementById('atividades-table-body');
-            tbody.innerHTML = '';
-            atividades.forEach((a, index) => {
-                const row = tbody.insertRow();
-                row.innerHTML = `
-                    <td>${a.codigo}</td>
-                    <td>${a.nome}</td>
-                    <td>${a.tipo}</td>
-                    <td>${a.local}</td>
-                    <td>${formatDateTime(a.data_hora)}</td>
-                    <td>${a.duracao}</td>
-                    <td>
-                        <button class="edit-btn" data-id="${a.codigo}">Editar</button>
-                        <button class="delete-btn" data-id="${a.codigo}">Excluir</button>
-                    </td>
-                `;
-            });
-            document.getElementById('total-atividades').textContent = atividades.length;
-        } catch (err) {
-            console.error('Erro ao carregar atividades:', err);
-        }
-    };
-
-    // ----------- FORMATADORES -----------
-    const formatDate = (dateStr) => {
-        if (!dateStr) return '';
-        const date = new Date(dateStr);
-        return date.toLocaleDateString('pt-BR');
-    };
-
-    const formatDateTime = (dateStr) => {
-        if (!dateStr) return '';
-        const date = new Date(dateStr);
-        return date.toLocaleString('pt-BR');
-    };
-
-    // ----------- INICIAL -----------
-    renderIntegrantes();
-    renderFrentes();
-    renderAtividades();
+    e.target.reset();
+    carregarIntegrantes();
+  });
 });
+
+async function carregarIntegrantes() {
+  const res = await fetch("/api/integrantes");
+  const lista = await res.json();
+  const ul = document.getElementById("lista-integrantes");
+  ul.innerHTML = "";
+  lista.forEach(i => {
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <strong>${i.nome}</strong> (${i.matricula}) - ${i.email}
+      <button onclick="removerIntegrante('${i.matricula}')">Excluir</button>
+    `;
+    ul.appendChild(li);
+  });
+}
+
+async function removerIntegrante(matricula) {
+  await fetch(`/api/integrantes/${matricula}`, { method: "DELETE" });
+  carregarIntegrantes();
+}
+
+// FRENTES
+document.getElementById("form-frente").addEventListener("submit", async e => {
+  e.preventDefault();
+  const data = {
+    codigo: codigoFrente.value,
+    nome: nomeFrente.value,
+    tipo: tipoFrente.value,
+    descricao: descricaoFrente.value,
+    datacriacao: datacriacaoFrente.value
+  };
+  await fetch("/api/frentes", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(data)
+  });
+  e.target.reset();
+  carregarFrentes();
+});
+
+async function carregarFrentes() {
+  const res = await fetch("/api/frentes");
+  const lista = await res.json();
+  const ul = document.getElementById("lista-frentes");
+  ul.innerHTML = "";
+  lista.forEach(f => {
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <strong>${f.nome}</strong> (${f.codigo}) - ${f.tipo}
+      <button onclick="removerFrente('${f.codigo}')">Excluir</button>
+    `;
+    ul.appendChild(li);
+  });
+}
+
+async function removerFrente(codigo) {
+  await fetch(`/api/frentes/${codigo}`, { method: "DELETE" });
+  carregarFrentes();
+}
+
+// ATIVIDADES
+document.getElementById("form-atividade").addEventListener("submit", async e => {
+  e.preventDefault();
+  const data = {
+    codigo: codigoAtiv.value,
+    nome: nomeAtiv.value,
+    descricao: descricaoAtiv.value,
+    tipo: tipoAtiv.value,
+    local: localAtiv.value,
+    data_hora: dataHoraAtiv.value,
+    duracao: duracaoAtiv.value
+  };
+  await fetch("/api/atividades", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(data)
+  });
+  e.target.reset();
+  carregarAtividades();
+});
+
+async function carregarAtividades() {
+  const res = await fetch("/api/atividades");
+  const lista = await res.json();
+  const ul = document.getElementById("lista-atividades");
+  ul.innerHTML = "";
+  lista.forEach(a => {
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <strong>${a.nome}</strong> (${a.codigo}) - ${a.tipo} em ${a.local}
+      <button onclick="removerAtividade('${a.codigo}')">Excluir</button>
+    `;
+    ul.appendChild(li);
+  });
+}
+
+async function removerAtividade(codigo) {
+  await fetch(`/api/atividades/${codigo}`, { method: "DELETE" });
+  carregarAtividades();
+}
