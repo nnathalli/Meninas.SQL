@@ -12,6 +12,14 @@ from src.persistence.atividade_crud import (
     get_atividades, get_atividade_por_codigo,
     create_atividade, update_atividade, delete_atividade
 )
+from src.persistence.professora_crud import (
+    get_professoras, get_professora_por_matricula,
+    create_professora, update_professora, delete_professora
+)
+from src.persistence.aluna_crud import (
+    get_alunas, get_aluna_por_matricula,
+    create_aluna, update_aluna, delete_aluna
+)
 
 app = Flask(__name__, static_folder='frontend', static_url_path='')
 CORS(app)
@@ -57,6 +65,94 @@ def excluir_integrante(matricula):
     delete_integrante(matricula)
     return jsonify({'mensagem': 'Integrante excluído'}), 200
 
+# ---------- ALUNAS ----------
+@app.route('/api/alunas', methods=['GET'])
+def listar_alunas():
+    return jsonify(get_alunas()), 200
+
+@app.route('/api/alunas/<matricula>', methods=['GET'])
+def obter_aluna(matricula):
+    aluna = get_aluna_por_matricula(matricula)
+    return jsonify(aluna or {'erro': 'Não encontrada'}), 200
+
+@app.route('/api/alunas', methods=['POST'])
+def adicionar_aluna():
+    try:
+        data = request.get_json()
+        matricula = data['matricula']
+        bolsa = data['bolsa']
+        nomecurso = data['nomecurso']
+        instituicaocurso = data['instituicaocurso']
+        departamento = data['departamento']
+        instituicao = data['instituicao']
+        
+        create_aluna(matricula, bolsa, nomecurso, instituicaocurso, departamento, instituicao)
+
+        return jsonify({'mensagem': 'Aluna cadastrada com sucesso'}), 201
+    except Exception as e:
+        return jsonify({'erro': str(e)}), 400
+
+
+@app.route('/api/alunas/<matricula>', methods=['PUT'])
+def editar_aluna(matricula):
+    try:
+        data = request.get_json()
+        update_aluna(matricula, data)
+        return jsonify({'mensagem': 'Aluna atualizada'}), 200
+    except Exception as e:
+        return jsonify({'erro': str(e)}), 400
+
+@app.route('/api/alunas/<matricula>', methods=['DELETE'])
+def excluir_aluna(matricula):
+    try:
+        delete_aluna(matricula)
+        return jsonify({'mensagem': 'Aluna excluída'}), 200
+    except Exception as e:
+        return jsonify({'erro': str(e)}), 400
+
+# ---------- PROFESSORAS ----------
+
+@app.route('/api/professoras', methods=['GET'])
+def listar_professoras():
+    return jsonify(get_professoras()), 200
+
+@app.route('/api/professoras/<matricula>', methods=['GET'])
+def obter_professora(matricula):
+    prof = get_professora_por_matricula(matricula)
+    return jsonify(prof or {'erro': 'Não encontrada'}), 200
+
+@app.route('/api/professoras', methods=['POST'])
+def adicionar_professora():
+    try:
+        data = request.get_json()
+        matricula = data['matricula']
+        areaatuacao = data['areaatuacao']
+        curriculo = data['curriculo']
+        instituicao = data['instituicao']
+        
+        create_professora(matricula, areaatuacao, curriculo, instituicao)
+
+        return jsonify({'mensagem': 'Professora cadastrada com sucesso'}), 201
+    except Exception as e:
+        print("Erro ao cadastrar professora:", e)
+        return jsonify({'erro': str(e)}), 400
+
+@app.route('/api/professoras/<matricula>', methods=['PUT'])
+def editar_professora(matricula):
+    try:
+        data = request.get_json()
+        update_professora(matricula, data)
+        return jsonify({'mensagem': 'Professora atualizada'}), 200
+    except Exception as e:
+        return jsonify({'erro': str(e)}), 400
+
+@app.route('/api/professoras/<matricula>', methods=['DELETE'])
+def excluir_professora(matricula):
+    try:
+        delete_professora(matricula)
+        return jsonify({'mensagem': 'Professora excluída'}), 200
+    except Exception as e:
+        return jsonify({'erro': str(e)}), 400
 
 # ---------- FRENTES ----------
 @app.route('/api/frentes', methods=['GET'])

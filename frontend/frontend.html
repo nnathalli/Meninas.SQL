@@ -15,19 +15,55 @@
 
   <div class="container">
 
-    <!-- INTEGRANTES -->
-    <section id="integrantes" class="secao ativa">
-      <h1>Integrantes</h1>
-      <form id="form-integrante">
+    <!-- Dados gerais -->
+    <section id="cadastro-geral" class="secao ativa">
+      <h1>Cadastro de Integrante</h1>
+      <form id="form-geral">
         <input type="text" id="matricula" placeholder="Matrícula" required />
         <input type="text" id="nome" placeholder="Nome" required />
         <input type="date" id="data_nasc" required />
         <input type="date" id="data_entrada" required />
         <input type="email" id="email" placeholder="Email" required />
         <input type="text" id="telefone" placeholder="Telefone" required />
-        <button type="submit">Adicionar</button>
+
+        <label for="tipo-integrante">Tipo de Integrante:</label>
+        <select id="tipo-integrante" required>
+          <option value="">Selecione</option>
+          <option value="professora">Professora</option>
+          <option value="aluna">Aluna</option>
+        </select>
+
+        <button type="submit">Continuar</button>
+      </form>
+    </section>
+
+<!-- Professora -->
+    <section id="cadastro-professora" class="secao" style="display:none;">
+      <h2>Informações da Professora</h2>
+      <form id="form-professora">
+        <input type="text" id="areaatuacao" placeholder="Área de Atuação" required />
+        <input type="text" id="curriculo" placeholder="Currículo (link ou resumo)" required />
+        <input type="text" id="instituicaoProf" placeholder="Instituição" required />
+        <button type="submit">Finalizar Cadastro</button>
       </form>
       <ul id="lista-integrantes"></ul>
+    </section>
+
+<!-- Aluna -->
+    <section id="cadastro-aluna" class="secao" style="display:none;">
+      <h2>Informações da Aluna</h2>
+      <form id="form-aluna">
+        <label>Recebe Bolsa?</label>
+        <select id="bolsa" required>
+          <option value="true">Sim</option>
+          <option value="false">Não</option>
+        </select>
+        <input type="text" id="nomeCurso" placeholder="Nome do Curso" required />
+        <input type="text" id="instituicaoCurso" placeholder="Instituição do Curso" required />
+        <input type="text" id="departamento" placeholder="Departamento" required />
+        <input type="text" id="instituicaoAluna" placeholder="Instituição" required />
+        <button type="submit">Finalizar Cadastro</button>
+      </form>
     </section>
 
     <!-- FRENTES -->
