@@ -74,20 +74,6 @@ CREATE TABLE EscolasParceiras (
 	Telefone VARCHAR(15) NOT NULL
 );
 
-CREATE TABLE TelefoneEscola (
-    Id SERIAL PRIMARY KEY,
-    CodigoEscola INT NOT NULL,
-    Telefone VARCHAR(15) NOT NULL,
-    FOREIGN KEY (CodigoEscola) REFERENCES EscolasParceiras(Codigo)
-);
-
-CREATE TABLE EmailEscola (
-    Id SERIAL PRIMARY KEY,
-    CodigoEscola INT NOT NULL,
-    Email VARCHAR(100) NOT NULL,
-    FOREIGN KEY (CodigoEscola) REFERENCES EscolasParceiras(Codigo)
-);
-
 CREATE TABLE FrenteEscola (
     CodigoFrente INT NOT NULL,
     CodigoEscola INT NOT NULL,
