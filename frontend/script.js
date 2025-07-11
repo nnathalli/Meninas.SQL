@@ -506,9 +506,14 @@ document.getElementById("form-editar-integrante").addEventListener("submit", asy
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data)
   });
-  alert((await res.json()).mensagem || "Integrante atualizado!");
+  const resposta = await res.json();
+  if (!res.ok) return alert("❌ Erro ao atualizar integrante");
+  alert(resposta.mensagem || "Integrante atualizado!");
   carregarIntegrantesParaEdicao();
 });
+//   alert((await res.json()).mensagem || "Integrante atualizado!");
+//   carregarIntegrantesParaEdicao();
+// });
 
 async function removerIntegrante(matricula) {
   if (!confirm("Confirmar exclusão?")) return;
@@ -550,7 +555,8 @@ document.getElementById("form-editar-frente").addEventListener("submit", async e
   const data = {
     nome: document.getElementById("edit-nomefrente").value,
     tipo: document.getElementById("edit-tipofrente").value,
-    descricao: document.getElementById("edit-descricaofrente").value // ✅ adicionado
+    descricao: document.getElementById("edit-descricaofrente").value,
+    datacriacao: document.getElementById("edit-datacriacaofrente").value,
   };
   await fetch(`/api/frentes/${codigo}`, {
     method: "PUT",
@@ -635,3 +641,35 @@ async function carregarIntegrantes() {
     tbody.appendChild(tr);
   });
 }
+
+function editarIntegrante(matricula, nome, email, telefone) {
+  document.getElementById("edit-matricula").value = matricula;
+  document.getElementById("edit-nome").value = nome;
+  document.getElementById("edit-email").value = email;
+  document.getElementById("edit-telefone").value = telefone;
+
+  document.getElementById("form-editar-integrante").style.display = "block";
+}
+
+async function carregarIntegrantesParaEdicao() {
+  const res = await fetch("/api/integrantes");
+  const integrantes = await res.json();
+  const tabela = document.getElementById("tabela-edicao-integrantes");
+  tabela.innerHTML = "";
+
+  integrantes.forEach(item => {
+    const linha = document.createElement("tr");
+    linha.innerHTML = `
+      <td>${item.matricula}</td>
+      <td>${item.nome}</td>
+      <td>${item.email}</td>
+      <td>${item.telefone}</td>
+      <td>
+        <button onclick="editarIntegrante('${item.matricula}', '${item.nome}', '${item.email}', '${item.telefone}')">✏️</button>
+        <button onclick="removerIntegrante('${item.matricula}')">🗑️</button>
+      </td>
+    `;
+    tabela.appendChild(linha);
+  });
+}
+

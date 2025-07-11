@@ -63,8 +63,8 @@
             </thead>
             <tbody></tbody>
           </table>
-          <form id="form-editar-integrante">
-            <input type="hidden" id="edit-matricula">
+          <form id="form-editar-integrante" style="display:none">
+            <!-- <input type="hidden" id="edit-matricula">
             <label>Nome:</label>
             <input type="text" id="edit-nome" required>
 
@@ -72,13 +72,19 @@
             <input type="email" id="edit-email" required>
 
             <label>Telefone:</label>
-            <input type="text" id="edit-telefone" required>
-
-            <button onclick="editarIntegrante(
+            <input type="text" id="edit-telefone" required> -->
+          <form id="form-editar-integrante" style="display:none">
+            <input type="text" id="edit-matricula" readonly>
+            <input type="text" id="edit-nome" placeholder="Nome">
+            <input type="email" id="edit-email" placeholder="Email">
+            <input type="text" id="edit-telefone" placeholder="Telefone">
+            <button type="submit">Atualizar Integrante</button>
+          </form>
+            <!-- <button onclick="editarIntegrante(
               '${item.matricula}', 
               '${item.nome}', 
               '${item.email}', 
-              '${item.telefone}')">✏️</button>
+              '${item.telefone}')">✏️</button> -->
           </form>
 
           <hr>
