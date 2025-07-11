@@ -39,18 +39,27 @@ document.getElementById("form-frente").addEventListener("submit", async e => {
 });
 
 async function carregarFrentes() {
-  const res = await fetch("/api/frentes");
-  const lista = await res.json();
-  const ul = document.getElementById("lista-frentes");
-  ul.innerHTML = "";
-  lista.forEach(f => {
-    const li = document.createElement("li");
-    li.innerHTML = `
-      <strong>${f.nome}</strong> (${f.codigo}) - ${f.tipo}
-      <button onclick="removerFrente('${f.codigo}')">Excluir</button>
-    `;
-    ul.appendChild(li);
-  });
+  try {
+    const res = await fetch("/api/frentes");
+    const frentes = await res.json(); // Agora a variável frentes está definida
+    
+    const ul = document.getElementById("lista-frentes");
+    ul.innerHTML = frentes.map(f => `
+      <li>
+        <strong>${f.nome}</strong> (${f.codigo})
+        <button onclick="associarIntegranteFrente('${f.codigo}')">+ Integrante</button>
+        <ul id="integrantes-frente-${f.codigo}"></ul>
+      </li>
+    `).join('');
+    
+    // Carrega os integrantes de cada frente
+    frentes.forEach(frente => {
+      carregarIntegrantesFrente(frente.codigo);
+    });
+  } catch (err) {
+    console.error("Erro ao carregar frentes:", err);
+    document.getElementById("lista-frentes").innerHTML = "<li>Erro ao carregar frentes</li>";
+  }
 }
 
 async function atualizarFrente(codigo, data) {
@@ -672,4 +681,212 @@ async function carregarIntegrantesParaEdicao() {
     tabela.appendChild(linha);
   });
 }
+// Função para associar integrante a frente
+async function associarIntegranteFrente(codigoFrente) {
+  const matricula = prompt("Digite a matrícula do integrante:");
+  if (!matricula) return;
+
+  const funcao = prompt("Digite a função do integrante na frente:", "Participante");
+  
+  try {
+    const res = await fetch(`/api/frentes/${codigoFrente}/integrantes`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ matricula, funcao })
+    });
+
+    if (!res.ok) throw new Error(await res.text());
+    
+    alert("Integrante associado com sucesso!");
+    carregarIntegrantesFrente(codigoFrente);
+  } catch (err) {
+    alert("Erro ao associar integrante: " + err.message);
+  }
+}
+
+// Função para carregar integrantes de uma frente
+async function carregarIntegrantesFrente(codigoFrente) {
+  const res = await fetch(`/api/frentes/${codigoFrente}/integrantes`);
+  const integrantes = await res.json();
+  
+  const lista = document.getElementById(`integrantes-frente-${codigoFrente}`);
+  if (!lista) return;
+  
+  lista.innerHTML = integrantes.map(i => `
+    <li>
+      ${i.nome} (${i.matricula}) - ${i.funcao}
+      <button onclick="desassociarIntegranteFrente('${codigoFrente}', '${i.matricula}')">Remover</button>
+    </li>
+  `).join('');
+}
+
+// Função para desassociar integrante de frente
+async function desassociarIntegranteFrente(codigoFrente, matricula) {
+  if (!confirm(`Tem certeza que deseja remover o integrante ${matricula} da frente?`)) return;
+  
+  try {
+    const res = await fetch(`/api/frentes/${codigoFrente}/integrantes/${matricula}`, {
+      method: "DELETE"
+    });
+
+    if (!res.ok) throw new Error(await res.text());
+    
+    alert("Integrante removido da frente!");
+    carregarIntegrantesFrente(codigoFrente);
+  } catch (err) {
+    alert("Erro ao remover integrante: " + err.message);
+  }
+}
+
+// Funções para atividades
+// Variável global para armazenar a atividade selecionada
+let atividadeSelecionada = null;
+document.addEventListener("DOMContentLoaded", () => {
+  carregarIntegrantes();
+  carregarFrentes();
+  carregarAtividades();
+
+  // Modal de associação
+  document.querySelector('.close').addEventListener('click', () => {
+    document.getElementById('modal-associar-atividade').style.display = 'none';
+  });
+
+  document.querySelector('.btn-associar').addEventListener('click', associarIntegranteAtividade);
+});
+// Função para abrir o modal de associação
+function abrirModalAssociarAtividade(codigoAtividade) {
+  atividadeSelecionada = codigoAtividade;
+  document.getElementById('modal-associar-atividade').style.display = 'block';
+  carregarIntegrantesParaAssociar();
+  carregarIntegrantesAtividade(codigoAtividade);
+}
+
+// Função para fechar o modal
+function fecharModal(idModal) {
+  document.getElementById(idModal).style.display = 'none';
+}
+
+// Carrega os integrantes para o select
+async function carregarIntegrantesParaAssociar() {
+  const select = document.getElementById('select-integrante-atividade');
+  select.innerHTML = '<option value="">Carregando...</option>';
+  
+  try {
+    const res = await fetch('/api/integrantes');
+    const integrantes = await res.json();
+    
+    select.innerHTML = '<option value="">Selecione um integrante</option>';
+    integrantes.forEach(integrante => {
+      const option = document.createElement('option');
+      option.value = integrante.matricula;
+      option.textContent = `${integrante.nome} (${integrante.matricula})`;
+      select.appendChild(option);
+    });
+  } catch (err) {
+    console.error('Erro ao carregar integrantes:', err);
+    select.innerHTML = '<option value="">Erro ao carregar</option>';
+  }
+}
+
+// Carrega os integrantes associados a uma atividade
+async function carregarIntegrantesAtividade(codigoAtividade) {
+  const lista = document.getElementById('lista-integrantes-atividade');
+  lista.innerHTML = '<li>Carregando...</li>';
+  
+  try {
+    const res = await fetch(`/api/atividades/${codigoAtividade}/integrantes`);
+    const integrantes = await res.json();
+    
+    if (integrantes.length === 0) {
+      lista.innerHTML = '<li>Nenhum integrante associado</li>';
+    } else {
+      lista.innerHTML = integrantes.map(integrante => `
+        <li>
+          ${integrante.nome} (${integrante.matricula})
+          <button onclick="desassociarIntegranteAtividade('${codigoAtividade}', '${integrante.matricula}')">
+            Remover
+          </button>
+        </li>
+      `).join('');
+    }
+  } catch (err) {
+    console.error('Erro ao carregar integrantes da atividade:', err);
+    lista.innerHTML = '<li>Erro ao carregar</li>';
+  }
+}
+
+// Associa um integrante a uma atividade
+async function associarIntegranteAtividade() {
+  const select = document.getElementById('select-integrante-atividade');
+  const matricula = select.value;
+  
+  if (!matricula) {
+    alert('Selecione um integrante');
+    return;
+  }
+  
+  try {
+    const res = await fetch(`/api/atividades/${atividadeSelecionada}/integrantes`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ matricula })
+    });
+    
+    if (!res.ok) throw new Error(await res.text());
+    
+    alert('Integrante associado com sucesso!');
+    carregarIntegrantesAtividade(atividadeSelecionada);
+    select.value = '';
+  } catch (err) {
+    alert('Erro ao associar integrante: ' + err.message);
+  }
+}
+
+// Desassocia um integrante de uma atividade
+async function desassociarIntegranteAtividade(codigoAtividade, matricula) {
+  if (!confirm(`Tem certeza que deseja remover o integrante ${matricula} desta atividade?`)) {
+    return;
+  }
+  
+  try {
+    const res = await fetch(`/api/atividades/${codigoAtividade}/integrantes/${matricula}`, {
+      method: 'DELETE'
+    });
+    
+    if (!res.ok) throw new Error(await res.text());
+    
+    alert('Integrante removido da atividade!');
+    carregarIntegrantesAtividade(codigoAtividade);
+  } catch (err) {
+    alert('Erro ao remover integrante: ' + err.message);
+  }
+}
+
+// Atualiza a função carregarAtividades para incluir o botão de associação
+async function carregarAtividades() {
+  const res = await fetch("/api/atividades");
+  const lista = await res.json();
+  const ul = document.getElementById("lista-atividades");
+  ul.innerHTML = "";
+  
+  lista.forEach(a => {
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <div>
+        <strong>${a.nome}</strong> (${a.codigo}) - ${a.tipo} em ${a.local}
+        <button onclick="abrirModalAssociarAtividade('${a.codigo}')">Gerenciar Integrantes</button>
+        <button onclick="removerAtividade('${a.codigo}')">Excluir</button>
+      </div>
+      <div class="integrantes-atividade" id="integrantes-atividade-${a.codigo}"></div>
+    `;
+    ul.appendChild(li);
+  });
+}
+
+// Atualiza o evento DOMContentLoaded para carregar as atividades
+document.addEventListener("DOMContentLoaded", () => {
+  carregarIntegrantes();
+  carregarFrentes();
+  carregarAtividades();
+});
 

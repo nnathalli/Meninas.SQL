@@ -20,6 +20,15 @@ from src.persistence.aluna_crud import (
     get_alunas, get_aluna_por_matricula,
     create_aluna, update_aluna, delete_aluna
 )
+from src.persistence.integrante_frente_crud import (
+    associar_integrante_frente, desassociar_integrante_frente,
+    get_integrantes_por_frente
+)
+from src.persistence.integrante_atividade_crud import (
+    associar_integrante_atividade, desassociar_integrante_atividade,
+    get_integrantes_por_atividade
+)
+
 # from src.persistence.curso_crud import (
 #     get_cursos, get_curso_por_codigo,
 #     create_curso, update_curso, delete_curso
@@ -282,6 +291,65 @@ def excluir_curso(codcurso):
         return jsonify({"mensagem": "Curso excluído com sucesso"}), 200
     except Exception as e:
         return jsonify({"erro": str(e)}), 400
-    
+# ---------- INTEGRANTE FRENTE ----------
+@app.route('/api/frentes/<codigo>/integrantes', methods=['GET'])
+def listar_integrantes_frente(codigo):
+    return jsonify(get_integrantes_por_frente(codigo)), 200
+
+@app.route('/api/frentes/<codigo>/integrantes', methods=['POST'])
+def adicionar_integrante_frente(codigo):
+    try:
+        data = request.get_json()
+        associar_integrante_frente(data['matricula'], codigo, data.get('funcao', 'Participante'))
+        return jsonify({'mensagem': 'Integrante associado à frente com sucesso'}), 201
+    except Exception as e:
+        return jsonify({'erro': str(e)}), 400
+
+@app.route('/api/frentes/<codigo>/integrantes/<matricula>', methods=['DELETE'])
+def remover_integrante_frente(codigo, matricula):
+    try:
+        # Verifica se o integrante existe
+        integrante = get_integrante_por_matricula(matricula)
+        if not integrante:
+            return jsonify({'erro': 'Integrante não encontrado'}), 404
+            
+        # Verifica se a frente existe
+        frente = get_frente_por_codigo(codigo)
+        if not frente:
+            return jsonify({'erro': 'Frente não encontrada'}), 404
+            
+        # Tenta desassociar
+        sucesso = desassociar_integrante_frente(matricula, codigo)
+        
+        if sucesso:
+            return jsonify({'mensagem': 'Integrante desassociado da frente'}), 200
+        else:
+            return jsonify({'erro': 'Associação não encontrada ou já desativada'}), 404
+            
+    except Exception as e:
+        return jsonify({'erro': str(e)}), 500
+
+# ---------- INTEGRANTE ATIVIDADE ----------
+@app.route('/api/atividades/<codigo>/integrantes', methods=['GET'])
+def listar_integrantes_atividade(codigo):
+    return jsonify(get_integrantes_por_atividade(codigo)), 200
+
+@app.route('/api/atividades/<codigo>/integrantes', methods=['POST'])
+def adicionar_integrante_atividade(codigo):
+    try:
+        data = request.get_json()
+        associar_integrante_atividade(data['matricula'], codigo)
+        return jsonify({'mensagem': 'Integrante associado à atividade com sucesso'}), 201
+    except Exception as e:
+        return jsonify({'erro': str(e)}), 400
+
+@app.route('/api/atividades/<codigo>/integrantes/<matricula>', methods=['DELETE'])
+def remover_integrante_atividade(codigo, matricula):
+    try:
+        desassociar_integrante_atividade(matricula, codigo)
+        return jsonify({'mensagem': 'Integrante desassociado da atividade'}), 200
+    except Exception as e:
+        return jsonify({'erro': str(e)}), 400
+
 if __name__ == '__main__':
     app.run(debug=True)
