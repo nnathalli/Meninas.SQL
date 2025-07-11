@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sistema de Gestão</title>
+  <title>Meninas.SQL</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -16,13 +16,14 @@
   <div class="container">
 
     <!-- Dados gerais -->
+    <div id="cadastro-geral" style="display: block;"></div>
     <section id="cadastro-geral" class="secao ativa">
       <h1>Cadastro de Integrante</h1>
-      <form id="form-geral">
+      <form id="form-integrante">
         <input type="text" id="matricula" placeholder="Matrícula" required />
         <input type="text" id="nome" placeholder="Nome" required />
-        <input type="date" id="data_nasc" required />
-        <input type="date" id="data_entrada" required />
+        <input type="text" id="data_nasc" placeholder="Data de Nascimento" required />
+        <input type="text" id="data_entrada" placeholder="Data de Entrada" required />
         <input type="email" id="email" placeholder="Email" required />
         <input type="text" id="telefone" placeholder="Telefone" required />
 
@@ -35,35 +36,159 @@
 
         <button type="submit">Continuar</button>
       </form>
+    </div>
     </section>
 
-<!-- Professora -->
+    <!-- Professora -->
     <section id="cadastro-professora" class="secao" style="display:none;">
-      <h2>Informações da Professora</h2>
-      <form id="form-professora">
-        <input type="text" id="areaatuacao" placeholder="Área de Atuação" required />
-        <input type="text" id="curriculo" placeholder="Currículo (link ou resumo)" required />
-        <input type="text" id="instituicaoProf" placeholder="Instituição" required />
-        <button type="submit">Finalizar Cadastro</button>
-      </form>
-      <ul id="lista-integrantes"></ul>
+      <div class="form-container">
+        <h2>Informações da Professora</h2>
+        <form id="form-professora">
+          <input type="text" id="areaatuacao" placeholder="Área de Atuação" required />
+          <input type="text" id="curriculo" placeholder="Currículo (link ou resumo)" required />
+          <input type="text" id="instituicaoProf" placeholder="Instituição" required />
+          <button type="submit">Finalizar Cadastro</button>
+        </form>
+        <!-- ABA DE PROFESSORA COM EDIÇÕES (HTML) -->
+        <section id="editar-dados" style="display: none;" class="form-container">
+          <h2>Gerenciar Integrantes</h2>
+          <table id="tabela-integrantes">
+            <thead>
+              <tr>
+                <th>Matrícula</th>
+                <th>Nome</th>
+                <th>Email</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          <form id="form-editar-integrante">
+            <input type="hidden" id="edit-matricula">
+            <label>Nome:</label>
+            <input type="text" id="edit-nome" required>
+
+            <label>Email:</label>
+            <input type="email" id="edit-email" required>
+
+            <label>Telefone:</label>
+            <input type="text" id="edit-telefone" required>
+
+            <button onclick="editarIntegrante(
+              '${item.matricula}', 
+              '${item.nome}', 
+              '${item.email}', 
+              '${item.telefone}')">✏️</button>
+          </form>
+
+          <hr>
+
+          <h2>Gerenciar Frentes</h2>
+          <table id="tabela-frentes">
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Nome</th>
+                <th>Tipo</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          <form id="form-editar-frente">
+            <input type="hidden" id="edit-codfrente">
+            <label for="edit-nomefrente">Nome:</label>
+            <input type="text" id="edit-nomefrente" required>
+            <label for="edit-tipofrente">Tipo:</label>
+            <input type="text" id="edit-tipofrente" required>
+            <label for="edit-descricaofrente">Descrição:</label>
+            <input type="text" id="edit-descricaofrente" required>
+            <button type="submit">Atualizar Frente</button>
+          </form>
+
+          <hr>
+
+          <h2>Gerenciar Atividades</h2>
+          <table id="tabela-atividades">
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Nome</th>
+                <th>Descrição</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          <form id="form-editar-atividade">
+            <input type="hidden" id="edit-codatividade">
+            <label for="edit-nomeatividade">Nome:</label>
+            <input type="text" id="edit-nomeatividade" required>
+            <label for="edit-descricaoatividade">Descrição:</label>
+            <input type="text" id="edit-descricaoatividade" required>
+            <button type="submit">Atualizar Atividade</button>
+          </form>
+        </section>
+
+      </div>
     </section>
 
-<!-- Aluna -->
+    <!-- Aluna -->
     <section id="cadastro-aluna" class="secao" style="display:none;">
-      <h2>Informações da Aluna</h2>
-      <form id="form-aluna">
-        <label>Recebe Bolsa?</label>
-        <select id="bolsa" required>
-          <option value="true">Sim</option>
-          <option value="false">Não</option>
-        </select>
-        <input type="text" id="nomeCurso" placeholder="Nome do Curso" required />
-        <input type="text" id="instituicaoCurso" placeholder="Instituição do Curso" required />
-        <input type="text" id="departamento" placeholder="Departamento" required />
-        <input type="text" id="instituicaoAluna" placeholder="Instituição" required />
-        <button type="submit">Finalizar Cadastro</button>
+      <div class="form-container">
+        <h2>Informações da Aluna</h2>
+        <!-- <form id="form-aluna"> -->
+    <!-- Campos de aluna -->
+          <label for="codcurso">Selecione seu curso:</label>
+          <select id="codcurso" required>
+            <option disabled selected value="">Selecione um curso existente ou cadastre abaixo</option>
+          </select>
+          <hr style="margin: 30px 0;">
+
+          <h3>Cadastrar novo curso</h3>
+          <form id="form-curso">
+            <label for="nomeCurso">Nome:</label>
+            <input type="text" id="nomeCurso" required>
+
+            <label for="instituicaoCurso">Instituição:</label>
+            <input type="text" id="instituicaoCurso" required>
+
+            <label for="departamentoCurso">Departamento:</label>
+            <input type="text" id="departamentoCurso" required>
+
+            <button type="submit">Cadastrar Curso</button>
+        </form>
+        <hr style="margin: 30px 0;">
+
+    <!-- Finalizar cadastro da aluna -->
+        <form id="form-aluna">
+          <label for="bolsa">Recebe Bolsa?</label>
+          <select id="bolsa" required>
+            <option value="true">Sim</option>
+            <option value="false">Não</option>
+          </select>
+
+          <button type="submit">Finalizar cadastro</button>
+        </form>
+      </div>
+    </section>
+          
+    <!-- Cursos -->
+    <section id="cadastro-cursos" class="secao" style="display:none;">
+      <h2>Cadastro de Curso</h2>
+      <form id="form-curso">
+        <label for="nomeCurso">Nome:</label>
+        <input type="text" id="nomeCurso" required>
+
+        <label for="instituicaoCurso">Instituição:</label>
+        <input type="text" id="instituicaoCurso" required>
+
+        <label for="departamentoCurso">Departamento:</label>
+        <input type="text" id="departamentoCurso" required>
+
+        <button type="submit">Cadastrar Curso</button>
       </form>
+      <ul id="cadastro-aluna"></ul>
     </section>
 
     <!-- FRENTES -->

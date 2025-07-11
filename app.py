@@ -20,6 +20,12 @@ from src.persistence.aluna_crud import (
     get_alunas, get_aluna_por_matricula,
     create_aluna, update_aluna, delete_aluna
 )
+# from src.persistence.curso_crud import (
+#     get_cursos, get_curso_por_codigo,
+#     create_curso, update_curso, delete_curso
+# )
+# from src.persistence.curso_crud import get_cursos, get_curso_por_codigo, create_curso, update_curso, delete_curso
+
 
 app = Flask(__name__, static_folder='frontend', static_url_path='')
 CORS(app)
@@ -43,12 +49,13 @@ def adicionar_integrante():
         data = request.get_json()
         matricula = data['matricula']
         nome = data['nome']
-        data_nasc = data['data_nasc']
-        data_entrada = data['data_entrada']
+        datanasc = data['datanasc']
+        dataentrada = data['dataentrada']
         email = data['email']
         telefone = data['telefone']
 
-        create_integrante(matricula, nome, data_nasc, data_entrada, email, telefone)
+        create_integrante(matricula, nome, datanasc, dataentrada, email, telefone)
+
 
         return jsonify({'mensagem': 'Integrante cadastrado com sucesso'}), 201
     except Exception as e:
@@ -79,15 +86,11 @@ def obter_aluna(matricula):
 def adicionar_aluna():
     try:
         data = request.get_json()
-        matricula = data['matricula']
-        bolsa = data['bolsa']
-        nomecurso = data['nomecurso']
-        instituicaocurso = data['instituicaocurso']
-        departamento = data['departamento']
-        instituicao = data['instituicao']
-        
-        create_aluna(matricula, bolsa, nomecurso, instituicaocurso, departamento, instituicao)
-
+        create_aluna(
+            data['matricula'],
+            data['bolsa'],
+            data['codcurso']
+        )
         return jsonify({'mensagem': 'Aluna cadastrada com sucesso'}), 201
     except Exception as e:
         return jsonify({'erro': str(e)}), 400
@@ -233,6 +236,52 @@ def excluir_atividade(codigo):
     delete_atividade(codigo)
     return jsonify({'mensagem': 'Atividade excluída'}), 200
 
+# ---------- CURSOS ----------
 
+from src.persistence.curso_crud import (
+    get_cursos,
+    get_curso_por_codigo,
+    create_curso,
+    update_curso,
+    delete_curso
+)
+
+@app.route("/api/cursos", methods=["GET"])
+def listar_cursos():
+    return jsonify(get_cursos()), 200
+
+@app.route("/api/cursos/<int:codcurso>", methods=["GET"])
+def obter_curso(codcurso):
+    curso = get_curso_por_codigo(codcurso)
+    if curso:
+        return jsonify(curso), 200
+    return jsonify({"erro": "Curso não encontrado"}), 404
+
+@app.route("/api/cursos", methods=["POST"])
+def adicionar_curso():
+    try:
+        data = request.get_json()
+        create_curso(data)
+        return jsonify({"mensagem": "Curso criado com sucesso"}), 201
+    except Exception as e:
+        return jsonify({"erro": str(e)}), 400
+
+@app.route("/api/cursos/<int:codcurso>", methods=["PUT"])
+def editar_curso(codcurso):
+    try:
+        data = request.get_json()
+        update_curso(codcurso, data)
+        return jsonify({"mensagem": "Curso atualizado com sucesso"}), 200
+    except Exception as e:
+        return jsonify({"erro": str(e)}), 400
+
+@app.route("/api/cursos/<int:codcurso>", methods=["DELETE"])
+def excluir_curso(codcurso):
+    try:
+        delete_curso(codcurso)
+        return jsonify({"mensagem": "Curso excluído com sucesso"}), 200
+    except Exception as e:
+        return jsonify({"erro": str(e)}), 400
+    
 if __name__ == '__main__':
     app.run(debug=True)

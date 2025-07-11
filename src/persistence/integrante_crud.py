@@ -5,17 +5,15 @@ def get_integrantes():
     conn = db.connect()
     try:
         cur = conn.cursor()
-        cur.execute("""
-            SELECT matricula, nome, datanasc, dataentrada, email, telefone
-            FROM integrante
-        """)
+        cur.execute("SELECT matricula, nome, datanasc, dataentrada, email, telefone FROM integrante")
+
         rows = cur.fetchall()
         return [
             {
                 'matricula': r[0],
                 'nome': r[1],
-                'data_nasc': str(r[2]),
-                'data_entrada': str(r[3]),
+                'datanasc': r[2],
+                'dataentrada': r[3],
                 'email': r[4],
                 'telefone': r[5]
             } for r in rows
@@ -24,22 +22,18 @@ def get_integrantes():
         db.disconnect()
 
 
+
 def get_integrante_por_matricula(matricula):
     db = DatabaseConnection()
     conn = db.connect()
     try:
         cur = conn.cursor()
-        cur.execute("""
-            SELECT matricula, nome, datanasc, dataentrada, email, telefone
-            FROM integrante WHERE matricula = %s
-        """, (matricula,))
+        cur.execute("SELECT matricula, nome, datanasc, dataentrada, email, telefone FROM integrante WHERE matricula = %s", (matricula,))
         r = cur.fetchone()
         if r:
             return {
                 'matricula': r[0],
                 'nome': r[1],
-                'data_nasc': str(r[2]),
-                'data_entrada': str(r[3]),
                 'email': r[4],
                 'telefone': r[5]
             }
@@ -48,7 +42,7 @@ def get_integrante_por_matricula(matricula):
         db.disconnect()
 
 
-def create_integrante(matricula, nome, data_nasc, data_entrada, email, telefone):
+def create_integrante(matricula, nome, datanasc, dataentrada, email, telefone):
     db = DatabaseConnection()
     conn = db.connect()
     try:
@@ -56,7 +50,7 @@ def create_integrante(matricula, nome, data_nasc, data_entrada, email, telefone)
         cur.execute("""
             INSERT INTO integrante (matricula, nome, datanasc, dataentrada, email, telefone)
             VALUES (%s, %s, %s, %s, %s, %s)
-        """, (matricula, nome, data_nasc, data_entrada, email, telefone))
+        """, (matricula, nome, datanasc, dataentrada, email, telefone))
         conn.commit()
     finally:
         db.disconnect()
@@ -72,7 +66,7 @@ def update_integrante(matricula, data):
             SET nome = %s, datanasc = %s, dataentrada = %s, email = %s, telefone = %s
             WHERE matricula = %s
         """, (
-            data['nome'], data['data_nasc'], data['data_entrada'],
+            data['nome'], data['datanasc'], data['dataentrada'],
             data['email'], data['telefone'], matricula
         ))
         conn.commit()

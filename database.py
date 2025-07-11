@@ -40,8 +40,6 @@ def create_tables():
             CREATE TABLE IF NOT EXISTS Integrante (
                 Matricula VARCHAR(20) PRIMARY KEY,
                 Nome VARCHAR(100) NOT NULL,
-                DataNasc DATE,
-                DataEntrada DATE,
                 Email VARCHAR(100) UNIQUE NOT NULL,
                 Telefone VARCHAR(20)
             );
@@ -101,8 +99,8 @@ def cadastrar_integrante(data):
     cur.execute("CALL cadastro_integrante(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (
         data['matricula'],
         data['nome'],
-        data['dataNasc'],
-        data['dataEntrada'],
+        # data['dataNasc'],
+        # data['dataEntrada'],
         data['email'],
         data['telefone'],
         data['tipo'],

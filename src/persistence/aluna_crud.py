@@ -40,18 +40,18 @@ def get_aluna_por_matricula(matricula):
     finally:
         db.disconnect()
 
-def create_aluna(matricula, bolsa, nomecurso, instituicaocurso, departamento, instituicao):
+def create_aluna(matricula, bolsa, codcurso):
     db = DatabaseConnection()
     conn = db.connect()
     try:
         cur = conn.cursor()
         cur.execute("""
-            INSERT INTO Aluna (matricula, bolsa, nomecurso, instituicaocurso, departamento, instituicao)
-            VALUES (%s, %s, %s, %s, %s, %s)
-        """, (matricula, bolsa, nomecurso, instituicaocurso, departamento, instituicao))
+            INSERT INTO Aluna (Matricula, Bolsa, CodCurso)
+            VALUES (%s, %s, %s)
+        """, (matricula, bolsa, codcurso))
         conn.commit()
     finally:
-        db.disconnect()
+        conn.close()
 
 def update_aluna(matricula, data):
     db = DatabaseConnection()

@@ -119,8 +119,6 @@ document.getElementById("form-geral").addEventListener("submit", async e => {
   const dadosIntegrante = {
     matricula: matricula.value,
     nome: nome.value,
-    data_nasc: data_nasc.value,
-    data_entrada: data_entrada.value,
     email: email.value,
     telefone: telefone.value
   };
