@@ -1,10 +1,12 @@
 # Meninas.SQL – Projeto Final de Banco de Dados
 
-Este repositório contém o sistema desenvolvido para o projeto Meninas.SQL, que visa organizar os dados do projeto Meninas.comp da UnB, utilizando banco de dados PostgreSQL, interface gráfica e persistência com Python.
+   Este repositório contém o sistema desenvolvido para o projeto Meninas.SQL, que visa organizar os dados do projeto Meninas.comp da UnB, utilizando banco de dados PostgreSQL, interface gráfica e persistência com Python.
 ---
+
 ## Sobre o Projeto Meninas.comp
 
-O projeto Meninas.comp incentiva a participação de meninas nas áreas de computação e tecnologia. Este sistema tem como objetivo armazenar, consultar e manter dados das alunas, professoras, atividades, produtos e parcerias.
+   O projeto Meninas.comp incentiva a participação de meninas nas áreas de computação e tecnologia. Este sistema tem como objetivo armazenar, consultar e manter dados das alunas, professoras, atividades, produtos e parcerias.
+   
 ---
 ## Integrantes
 

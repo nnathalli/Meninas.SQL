@@ -8,93 +8,130 @@ CREATE OR REPLACE PROCEDURE cadastro_integrante(
     p_tipo VARCHAR,
     p_extra JSON,
     p_codigo_frente INT DEFAULT NULL,
-    p_funcao VARCHAR DEFAULT 'Participante',
-    p_associar_atividades BOOLEAN DEFAULT FALSE
+    p_funcao VARCHAR DEFAULT 'Participante'
 )
 LANGUAGE plpgsql
 AS $$
 DECLARE
-    atividade_id INT;
+    v_curso_existe BOOLEAN;
 BEGIN
-    IF EXISTS (
-        SELECT 1 FROM integrante WHERE email = p_email
-    ) THEN
+    -- Validação de campos únicos
+    IF EXISTS (SELECT 1 FROM integrante WHERE matricula = p_matricula) THEN
+        RAISE EXCEPTION 'Matrícula já cadastrada no sistema.';
+    END IF;
+    
+    IF EXISTS (SELECT 1 FROM integrante WHERE email = p_email) THEN
         RAISE EXCEPTION 'Já existe um integrante com este email.';
     END IF;
-
-    IF p_tipo = 'aluna' AND EXISTS (
-        SELECT 1 FROM professora WHERE matricula = p_matricula
-    ) THEN
-        RAISE EXCEPTION 'Esta matrícula já pertence a uma professora.';
-    ELSIF p_tipo = 'professora' AND EXISTS (
-        SELECT 1 FROM aluna WHERE matricula = p_matricula
-    ) THEN
-        RAISE EXCEPTION 'Esta matrícula já pertence a uma aluna.';
+    
+    IF EXISTS (SELECT 1 FROM integrante WHERE telefone = p_telefone) THEN
+        RAISE EXCEPTION 'Telefone já cadastrado no sistema.';
     END IF;
 
-    INSERT INTO integrante (matricula, nome, datanasc, dataentrada, email, telefone)
-    VALUES (p_matricula, p_nome, p_data_nasc, p_data_entrada, p_email, p_telefone);
-
-    IF p_tipo = 'aluna' THEN
-        INSERT INTO aluna (
-            matricula, bolsa, nomecurso, instituicaocurso, departamento, instituicao
-        )
-        VALUES (
-            p_matricula,
-            COALESCE((p_extra->>'bolsa')::BOOLEAN, FALSE),
-            p_extra->>'nomecurso',
-            p_extra->>'instituicaocurso',
-            p_extra->>'departamento',
-            p_extra->>'instituicao'
-        );
-
-    ELSIF p_tipo = 'professora' THEN
-        INSERT INTO professora (
-            matricula, areaatuacao, curriculo, instituicao
-        )
-        VALUES (
-            p_matricula,
-            p_extra->>'areaatuacao',
-            p_extra->>'curriculo',
-            p_extra->>'instituicao'
-        );
-    ELSE
+    -- Validação de tipo (aluna/professora)
+    IF p_tipo NOT IN ('aluna', 'professora') THEN
         RAISE EXCEPTION 'Tipo de integrante inválido: deve ser "aluna" ou "professora".';
     END IF;
 
-    IF p_codigo_frente IS NOT NULL THEN
-        IF EXISTS (
-            SELECT 1 FROM integrantefrente
-            WHERE matricula = p_matricula
-              AND codigofrente = p_codigo_frente
-              AND dt_fim IS NULL
-        ) THEN
-            RAISE EXCEPTION 'Já existe vínculo ativo com essa frente.';
+    -- Validações específicas para alunas
+    IF p_tipo = 'aluna' THEN
+        -- Verifica se a matrícula já existe como professora
+        IF EXISTS (SELECT 1 FROM professora WHERE matricula = p_matricula) THEN
+            RAISE EXCEPTION 'Esta matrícula já pertence a uma professora.';
         END IF;
-
-        INSERT INTO integrantefrente (matricula, codigofrente, funcao, dt_inicio, dt_fim)
-        VALUES (p_matricula, p_codigo_frente, p_funcao, CURRENT_DATE, NULL);
-
-        IF p_associar_atividades THEN
-            FOR atividade_id IN
-                SELECT DISTINCT a.codigo
-                FROM atividades a
-                JOIN integranteatividade ia ON ia.codigoatividade = a.codigo
-                JOIN integrantefrente inf ON inf.matricula = ia.matricula
-                WHERE inf.codigofrente = p_codigo_frente
-                  AND a.datahora > CURRENT_DATE - INTERVAL '30 days'
-            LOOP
-                IF NOT EXISTS (
-                    SELECT 1 FROM integranteatividade
-                    WHERE matricula = p_matricula AND codigoatividade = atividade_id
-                ) THEN
-                    INSERT INTO integranteatividade (matricula, codigoatividade)
-                    VALUES (p_matricula, atividade_id);
-                END IF;
-            END LOOP;
+        
+        -- Verifica se o curso existe (se estiver usando codcurso como FK)
+        IF (p_extra->>'codcurso') IS NOT NULL THEN
+            SELECT EXISTS (SELECT 1 FROM curso WHERE codcurso = (p_extra->>'codcurso')::INT) 
+            INTO v_curso_existe;
+            
+            IF NOT v_curso_existe THEN
+                RAISE EXCEPTION 'Curso não encontrado.';
+            END IF;
         END IF;
     END IF;
 
-    RAISE NOTICE 'Integrante cadastrado com sucesso.';
+    -- Validações específicas para professoras
+    IF p_tipo = 'professora' THEN
+        -- Verifica se a matrícula já existe como aluna
+        IF EXISTS (SELECT 1 FROM aluna WHERE matricula = p_matricula) THEN
+            RAISE EXCEPTION 'Esta matrícula já pertence a uma aluna.';
+        END IF;
+    END IF;
+
+    -- Inicia transação
+    BEGIN
+        -- Insere dados básicos do integrante
+        INSERT INTO integrante (matricula, nome, datanasc, dataentrada, email, telefone)
+        VALUES (p_matricula, p_nome, p_data_nasc, p_data_entrada, p_email, p_telefone);
+
+        -- Insere dados específicos
+        IF p_tipo = 'aluna' THEN
+            INSERT INTO aluna (
+                matricula, 
+                bolsa, 
+                codcurso  -- Usando codcurso como FK conforme seu CRUD original
+            )
+            VALUES (
+                p_matricula,
+                (p_extra->>'bolsa')::BOOLEAN,
+                (p_extra->>'codcurso')::INT
+            );
+        ELSE
+            INSERT INTO professora (
+                matricula, 
+                areaatuacao, 
+                curriculo, 
+                instituicao
+            )
+            VALUES (
+                p_matricula,
+                p_extra->>'areaatuacao',
+                p_extra->>'curriculo',
+                p_extra->>'instituicao'
+            );
+        END IF;
+
+        -- Associação com frente (se solicitado)
+        IF p_codigo_frente IS NOT NULL THEN
+            -- Verifica se a frente existe
+            IF NOT EXISTS (SELECT 1 FROM frentesdetrabalho WHERE codigo = p_codigo_frente) THEN
+                RAISE EXCEPTION 'Frente de trabalho não encontrada.';
+            END IF;
+            
+            -- Verifica vínculo ativo
+            IF EXISTS (
+                SELECT 1 FROM integrantefrente
+                WHERE matricula = p_matricula
+                  AND codigofrente = p_codigo_frente
+                  AND dt_fim IS NULL
+            ) THEN
+                RAISE EXCEPTION 'Já existe vínculo ativo com essa frente.';
+            END IF;
+
+            -- Cria o vínculo
+            INSERT INTO integrantefrente (
+                matricula, 
+                codigofrente, 
+                funcao, 
+                dt_inicio, 
+                dt_fim
+            )
+            VALUES (
+                p_matricula, 
+                p_codigo_frente, 
+                p_funcao, 
+                CURRENT_DATE, 
+                NULL
+            );
+        END IF;
+
+        COMMIT;
+        RAISE NOTICE 'Integrante cadastrado com sucesso.';
+    EXCEPTION
+        WHEN OTHERS THEN
+            ROLLBACK;
+            RAISE EXCEPTION 'Erro no cadastro: %', SQLERRM;
+    END;
 END;
 $$;

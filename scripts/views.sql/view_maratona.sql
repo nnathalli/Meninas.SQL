@@ -29,7 +29,29 @@ SELECT
     (SELECT STRING_AGG(e.NomeEquipe || ' - ' || em.Classificacao, ' | ')
     FROM Equipe e
     JOIN EquipeMaratona em ON e.Id_equipe = em.Id_equipe
-    WHERE em.CodigoMaratona = m.Codigo) AS classificacao
-
+    WHERE em.CodigoMaratona = m.Codigo) AS classificacao,
+    
+    (SELECT COALESCE(
+        JSON_AGG(
+            JSON_BUILD_OBJECT(
+                'equipe', e.NomeEquipe,
+                'participantes', (
+                    SELECT JSON_AGG(
+                        JSON_BUILD_OBJECT(
+                            'nome', pe.Nome,
+                            'email', pe.Email,
+                            'telefone', pe.Telefone
+                        )
+                    )
+                    FROM ParticipanteEquipe pe
+                    WHERE pe.Id_equipe = e.Id_equipe
+                )
+            )
+        ),
+        '[]'::json)
+    FROM Equipe e
+    JOIN EquipeMaratona em ON e.Id_equipe = em.Id_equipe
+    WHERE em.CodigoMaratona = m.Codigo) AS equipes_com_participantes
+    
 FROM MaratonaProg m
 ORDER BY m.Codigo;
